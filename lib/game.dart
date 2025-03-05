@@ -1,0 +1,60 @@
+import 'dart:async';
+
+import 'package:flame/events.dart';
+import 'package:flame/game.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:tetris/block/block.dart';
+import 'package:tetris/board.dart';
+
+/// 主游戏类
+class TetrisGame extends FlameGame with KeyboardEvents {
+  Board? _board;
+  Block? _curBlock;
+
+  @override
+  FutureOr<void> onLoad() async {
+    add(_board = Board());
+    add(_curBlock = Block.generate());
+  }
+
+  var timeMillis = 0;
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    var curMillis = DateTime.now().millisecondsSinceEpoch;
+    var diffMillis = curMillis - timeMillis;
+    if (diffMillis < 1000) return;
+    timeMillis = curMillis;
+    if (_curBlock?.moveDown(_board!) == false) {
+      _board?.mergeBlock(_curBlock!);
+      _curBlock?.removeFromParent();
+      _curBlock = Block.generate();
+      add(_curBlock!);
+    }
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+    KeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp ||
+          event.logicalKey == LogicalKeyboardKey.keyW) {
+        _curBlock?.rotate(_board!);
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
+          event.logicalKey == LogicalKeyboardKey.keyS) {
+        _curBlock?.moveDown(_board!);
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+          event.logicalKey == LogicalKeyboardKey.keyA) {
+        _curBlock?.moveLeft(_board!);
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
+          event.logicalKey == LogicalKeyboardKey.keyD) {
+        _curBlock?.moveRight(_board!);
+      }
+    }
+    return super.onKeyEvent(event, keysPressed);
+  }
+}
