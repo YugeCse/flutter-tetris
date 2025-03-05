@@ -2,6 +2,8 @@
 
 Flutter Tetris game
 
+![Screenshot](./docs/preview.png)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
