@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:tetris/block/J_block.dart';
+import 'package:tetris/block/j2_block.dart';
 import 'package:tetris/block/l_block.dart';
 import 'package:tetris/block/o_block.dart';
 import 'package:tetris/block/t_block.dart';
@@ -118,7 +119,7 @@ abstract class Block extends PositionComponent {
   }
 
   static Block generate() {
-    var rand = Random(DateTime.now().millisecondsSinceEpoch).nextInt(4);
+    var rand = Random(DateTime.now().millisecondsSinceEpoch).nextInt(5);
     Block block;
     switch (rand) {
       case 0:
@@ -127,6 +128,8 @@ abstract class Block extends PositionComponent {
         block = OBlock();
       case 2:
         block = JBlock();
+      case 3:
+        block = J2Block();
       default:
         block = TBlock();
     }

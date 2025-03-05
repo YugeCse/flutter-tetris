@@ -15,7 +15,7 @@ class TetrisGame extends FlameGame with KeyboardEvents {
   @override
   FutureOr<void> onLoad() async {
     add(_board = Board());
-    add(_curBlock = Block.generate());
+    _board?.add(_curBlock = Block.generate());
   }
 
   var timeMillis = 0;
@@ -31,7 +31,7 @@ class TetrisGame extends FlameGame with KeyboardEvents {
       _board?.mergeBlock(_curBlock!);
       _curBlock?.removeFromParent();
       _curBlock = Block.generate();
-      add(_curBlock!);
+      _board?.add(_curBlock!);
     }
   }
 

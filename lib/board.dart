@@ -6,11 +6,11 @@ class Board extends PositionComponent {
   static final int boardCols = 10;
   static final int boardRows = 15;
 
-  final List<List<int>> cells = [];
+  final List<List<Color?>> cells = [];
 
   Board() {
     for (var y = 0; y < boardRows; y++) {
-      cells.add(List.filled(boardCols, 0));
+      cells.add(List.filled(boardCols, null));
     }
     size = Vector2(boardCols * Block.gridSize, boardRows * Block.gridSize);
   }
@@ -27,7 +27,7 @@ class Board extends PositionComponent {
           if (bx < 0 ||
               bx >= boardCols ||
               by >= boardRows ||
-              (by >= 0 && cells[by][bx] == 1)) {
+              (by >= 0 && cells[by][bx] != null)) {
             debugPrint('碰撞检测：x=$bx, y=$by');
             return true;
           }
@@ -49,7 +49,7 @@ class Board extends PositionComponent {
           if (bx < 0 ||
               bx >= boardCols ||
               by >= boardRows ||
-              (by >= 0 && cells[by][bx] == 1)) {
+              (by >= 0 && cells[by][bx] != null)) {
             debugPrint('碰撞检测：x=$bx, y=$by');
             return true;
           }
@@ -67,7 +67,7 @@ class Board extends PositionComponent {
         if (value == 1) {
           var bx = (block.position.x / Block.gridSize).round();
           var by = (block.position.y / Block.gridSize).round();
-          cells[by + y][bx + x] = 1; //填充表格
+          cells[by + y][bx + x] = block.tetrisColor; //填充表格
         }
       }
     }
@@ -77,9 +77,9 @@ class Board extends PositionComponent {
 
   void clearLines() {
     for (var y = 0; y < boardRows; y++) {
-      if (cells[y].every((element) => element == 1)) {
+      if (cells[y].every((element) => element != null)) {
         cells.removeAt(y);
-        cells.insert(0, List.filled(boardCols, 0));
+        cells.insert(0, List.filled(boardCols, null));
       }
     }
   }
@@ -88,7 +88,7 @@ class Board extends PositionComponent {
   void render(Canvas canvas) {
     for (var y = 0; y < boardRows; y++) {
       for (var x = 0; x < boardCols; x++) {
-        if (cells[y][x] == 1) {
+        if (cells[y][x] != null) {
           canvas.drawRect(
             Rect.fromLTWH(
               x * Block.gridSize,
@@ -96,7 +96,7 @@ class Board extends PositionComponent {
               Block.gridSize,
               Block.gridSize,
             ),
-            Paint()..color = const Color.fromARGB(255, 221, 221, 221),
+            Paint()..color = cells[y][x]!,
           );
         }
         canvas.drawRect(
