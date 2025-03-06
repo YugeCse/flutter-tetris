@@ -23,6 +23,12 @@ class Board extends PositionComponent {
   /// 预测的下一个方块
   List<int> expectNextBlockShape = [];
 
+  /// 当前得分数字
+  int scoreNumber = 0;
+
+  /// 当前得分组件
+  TextComponent? scoreTextComponent;
+
   /// 构造函数，完成面板格子数填充和定义面板大小
   Board() {
     size = Vector2(
@@ -43,7 +49,7 @@ class Board extends PositionComponent {
       ),
     );
     add(
-      TextComponent(
+      scoreTextComponent = TextComponent(
         text: 'Score: 0',
         position: Vector2((boardCols + 1) * Block.gridSize, 6 * Block.gridSize),
       ),
@@ -135,6 +141,7 @@ class Board extends PositionComponent {
       if (cells[y].every((element) => element != null)) {
         cells.removeAt(y);
         cells.insert(0, List.filled(boardCols, null));
+        scoreTextComponent?.text = "Score: ${++scoreNumber}";
       }
     }
   }
@@ -226,6 +233,8 @@ class Board extends PositionComponent {
 
   /// 清空所有数据行
   void clear() {
+    scoreNumber = 0;
+    scoreTextComponent?.text = "Score：0";
     cells.clear();
     for (var i = 0; i < boardRows; i++) {
       cells.add(List.filled(boardCols, null));
