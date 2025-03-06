@@ -34,10 +34,10 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
 
   @override
   FutureOr<void> onLoad() async {
-    add(_board = Board()..anchor = Anchor.topLeft);
     _board?.add(_curBlock = Block.generate());
     _nextBlock = Block.generate(); //生成下一个方块
     _board?.expectNextBlockShape = _nextBlock!.shape;
+    add(_board = Board()..anchor = Anchor.topLeft);
     _board?.position.x = (size.x - _board!.size.x) / 2;
     _board?.position.y = (size.y - _board!.size.y) / 2;
   }
