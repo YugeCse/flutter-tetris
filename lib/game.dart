@@ -17,6 +17,9 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
   /// 当前方块
   Block? _curBlock;
 
+  /// 下一个方块
+  Block? _nextBlock;
+
   /// 计时更新方块自动下落
   int timeMillis = 0;
 
@@ -33,6 +36,8 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
   FutureOr<void> onLoad() async {
     add(_board = Board()..anchor = Anchor.topLeft);
     _board?.add(_curBlock = Block.generate());
+    _nextBlock = Block.generate(); //生成下一个方块
+    _board?.expectNextBlockShape = _nextBlock!.shape;
     _board?.position.x = (size.x - _board!.size.x) / 2;
     _board?.position.y = (size.y - _board!.size.y) / 2;
   }
@@ -69,7 +74,9 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
     if (_curBlock?.moveDown(_board!) == false) {
       _board?.mergeBlock(_curBlock!);
       _curBlock?.removeFromParent();
-      _board?.add(_curBlock = Block.generate());
+      _board?.add(_curBlock = _nextBlock!);
+      _nextBlock = Block.generate();
+      _board?.expectNextBlockShape = _nextBlock!.shape;
     }
   }
 

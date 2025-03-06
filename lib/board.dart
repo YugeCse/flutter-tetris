@@ -4,6 +4,7 @@ import 'package:flame/components.dart' hide Block;
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:tetris/block/block.dart';
+import 'package:tetris/utils.dart';
 
 /// 游戏面板类
 class Board extends PositionComponent {
@@ -140,15 +141,27 @@ class Board extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        0,
+        0,
+        boardCols * Block.gridSize,
+        size.y,
+        Radius.circular(5),
+      ),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = const Color.fromARGB(255, 64, 64, 64),
+    );
     for (var y = 0; y < boardRows; y++) {
       for (var x = 0; x < boardCols; x++) {
         if (cells[y][x] != null) {
           canvas.drawRRect(
             RRect.fromLTRBR(
-              x * Block.gridSize,
-              y * Block.gridSize,
-              (x + 1) * Block.gridSize,
-              (y + 1) * Block.gridSize,
+              x * Block.gridSize + 1,
+              y * Block.gridSize + 1,
+              (x + 1) * Block.gridSize - 1,
+              (y + 1) * Block.gridSize - 1,
               Radius.circular(5),
             ),
             Paint()..color = cells[y][x]!,
@@ -173,8 +186,11 @@ class Board extends PositionComponent {
 
   /// 绘制下一个方块
   void drawNextBlockShape(Canvas canvas) {
-    var startY = 1;
-    var startX = Board.boardCols + 1;
+    double startY = 1;
+    double startX = Board.boardCols + 1;
+    var (maxX, maxY) = Utils.computeShpaeFillMaxNum(expectNextBlockShape);
+    startX += (Block.maxGridCols - maxX) / 2;
+    startY += (Block.maxGridRows - maxY) / 2;
     for (var y = 0; y < Block.maxGridRows; y++) {
       for (var x = 0; x < Block.maxGridCols; x++) {
         var index = y * Block.maxGridCols + x;
@@ -184,18 +200,28 @@ class Board extends PositionComponent {
                 : 0;
         canvas.drawRRect(
           RRect.fromLTRBR(
-            (startX + x) * Block.gridSize,
-            (startY + y) * Block.gridSize,
-            (startX + x + 1) * Block.gridSize,
-            (startY + y + 1) * Block.gridSize,
+            (startX + x) * Block.gridSize + 1,
+            (startY + y) * Block.gridSize + 1,
+            (startX + x + 1) * Block.gridSize - 1,
+            (startY + y + 1) * Block.gridSize - 1,
             Radius.circular(5),
           ),
           Paint()
-            ..color = Colors.greenAccent
+            ..color = value == 1 ? Colors.greenAccent : Colors.transparent
             ..style = value == 1 ? PaintingStyle.fill : PaintingStyle.stroke,
         );
       }
     }
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        (Board.boardCols + 1) * Block.gridSize,
+        Block.gridSize,
+        (Board.boardCols + 5) * Block.gridSize,
+        Block.gridSize * 5,
+        Radius.circular(5),
+      ),
+      Paint()..color = const Color.fromARGB(179, 25, 25, 25),
+    );
   }
 
   /// 清空所有数据行

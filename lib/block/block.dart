@@ -97,25 +97,13 @@ abstract class Block extends PositionComponent {
         if (shape[index] == 1) {
           canvas.drawRRect(
             RRect.fromLTRBR(
-              x * gridSize,
-              y * gridSize,
-              (x + 1) * gridSize,
-              (y + 1) * gridSize,
+              x * gridSize + 1,
+              y * gridSize + 1,
+              (x + 1) * gridSize - 1,
+              (y + 1) * gridSize - 1,
               Radius.circular(5),
             ),
             Paint()..color = tetrisColor,
-          );
-          canvas.drawRRect(
-            RRect.fromLTRBR(
-              x * gridSize,
-              y * gridSize,
-              (x + 1) * gridSize,
-              (y + 1) * gridSize,
-              Radius.circular(5),
-            ),
-            Paint()
-              ..color = Colors.black87
-              ..style = PaintingStyle.stroke,
           );
         }
       }
