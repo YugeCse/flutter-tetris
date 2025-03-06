@@ -9,16 +9,20 @@ import 'package:tetris/board.dart';
 
 /// 主游戏类
 class TetrisGame extends FlameGame with KeyboardEvents {
+  /// 游戏面板
   Board? _board;
+
+  /// 当前方块
   Block? _curBlock;
+
+  /// 计时更新方块自动下落
+  int timeMillis = 0;
 
   @override
   FutureOr<void> onLoad() async {
     add(_board = Board());
     _board?.add(_curBlock = Block.generate());
   }
-
-  var timeMillis = 0;
 
   @override
   void update(double dt) {

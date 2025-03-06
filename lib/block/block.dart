@@ -11,6 +11,7 @@ import 'package:tetris/block/z2_block.dart';
 import 'package:tetris/block/z_block.dart';
 import 'package:tetris/board.dart';
 
+/// 所有Block的基类
 abstract class Block extends PositionComponent {
   /// 单个Block最大的列数
   static int maxGridCols = 4;
@@ -27,6 +28,7 @@ abstract class Block extends PositionComponent {
   /// 当前旋转索引，从0开始
   int _curRotateIndex = 0;
 
+  /// 当前Block的颜色
   Color tetrisColor = Colors.blue;
 
   // 当前形状
@@ -120,6 +122,7 @@ abstract class Block extends PositionComponent {
     }
   }
 
+  /// 生成不同的方块内容
   static Block generate() {
     var seed = DateTime.now().millisecondsSinceEpoch;
     final blockFactories = [

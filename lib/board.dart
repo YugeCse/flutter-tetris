@@ -2,12 +2,18 @@ import 'package:flame/components.dart' hide Block;
 import 'package:flutter/material.dart';
 import 'package:tetris/block/block.dart';
 
+/// 游戏面板类
 class Board extends PositionComponent {
+  /// 面板的列数
   static final int boardCols = 10;
+
+  /// 面板的行数
   static final int boardRows = 15;
 
+  /// 面板所有的格子数
   final List<List<Color?>> cells = [];
 
+  /// 构造函数，完成面板格子数填充和定义面板大小
   Board() {
     for (var y = 0; y < boardRows; y++) {
       cells.add(List.filled(boardCols, null));
@@ -15,6 +21,7 @@ class Board extends PositionComponent {
     size = Vector2(boardCols * Block.gridSize, boardRows * Block.gridSize);
   }
 
+  /// 检测碰撞，与边缘碰撞或者已经填充的方块碰撞
   bool isCollision(Block block) {
     for (var y = 0; y < Block.maxGridRows; y++) {
       for (var x = 0; x < Block.maxGridCols; x++) {
@@ -37,6 +44,9 @@ class Board extends PositionComponent {
     return false;
   }
 
+  /// 碰撞检测2
+  /// - xPosition, yPosition: 方块左上角坐标
+  /// - shape: 方块形状
   bool isCollision2(double xPosition, double yPosition, List<int> shape) {
     for (var y = 0; y < Block.maxGridRows; y++) {
       for (var x = 0; x < Block.maxGridCols; x++) {
@@ -59,6 +69,7 @@ class Board extends PositionComponent {
     return false;
   }
 
+  /// 合并方块
   void mergeBlock(Block block) {
     for (var y = 0; y < Block.maxGridCols; y++) {
       for (var x = 0; x < Block.maxGridRows; x++) {
@@ -75,6 +86,7 @@ class Board extends PositionComponent {
     debugPrint("walls = $cells");
   }
 
+  /// 清除满行
   void clearLines() {
     for (var y = 0; y < boardRows; y++) {
       if (cells[y].every((element) => element != null)) {
