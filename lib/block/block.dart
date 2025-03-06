@@ -10,6 +10,7 @@ import 'package:tetris/block/t_block.dart';
 import 'package:tetris/block/z2_block.dart';
 import 'package:tetris/block/z_block.dart';
 import 'package:tetris/board.dart';
+import 'package:tetris/utils.dart';
 
 /// 所有Block的基类
 abstract class Block extends PositionComponent {
@@ -123,10 +124,10 @@ abstract class Block extends PositionComponent {
       () => TBlock(),
     ];
     var rand = Random(seed).nextInt(blockFactories.length);
-    return blockFactories[rand]()
-      ..position = Vector2(
-        (Board.boardCols - Block.maxGridCols) / 2 * Block.gridSize,
-        0,
-      );
+    var currentBlock = blockFactories[rand]();
+    var currentBlockShape = currentBlock.shape;
+    var (mxCols, _) = Utils.computeShpaeFillMaxNum(currentBlockShape);
+    int xCoordinate = ((Board.boardCols - mxCols) / 2).floor();
+    return currentBlock..position = Vector2(xCoordinate * Block.gridSize, 0);
   }
 }
