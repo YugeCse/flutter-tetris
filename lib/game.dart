@@ -1,14 +1,16 @@
 import 'dart:async';
 
+import 'package:flame/components.dart' show Anchor;
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tetris/block/block.dart';
 import 'package:tetris/board.dart';
 
 /// 主游戏类
-class TetrisGame extends FlameGame with KeyboardEvents {
+class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
   /// 游戏面板
   Board? _board;
 
@@ -24,10 +26,22 @@ class TetrisGame extends FlameGame with KeyboardEvents {
   /// 方块下落速度
   double fallDownSpeed = 1.0;
 
+  /// 是否播放背景音乐
+  bool isBgMusicPlaying = false;
+
   @override
   FutureOr<void> onLoad() async {
-    add(_board = Board());
+    add(_board = Board()..anchor = Anchor.topLeft);
     _board?.add(_curBlock = Block.generate());
+    _board?.position.x = (size.x - _board!.size.x) / 2;
+    _board?.position.y = (size.y - _board!.size.y) / 2;
+  }
+
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    _board?.position.x = (size.x - _board!.size.x) / 2;
+    _board?.position.y = (size.y - _board!.size.y) / 2;
   }
 
   /// 暂停Game
@@ -55,8 +69,16 @@ class TetrisGame extends FlameGame with KeyboardEvents {
     if (_curBlock?.moveDown(_board!) == false) {
       _board?.mergeBlock(_curBlock!);
       _curBlock?.removeFromParent();
-      _curBlock = Block.generate();
-      _board?.add(_curBlock!);
+      _board?.add(_curBlock = Block.generate());
+    }
+  }
+
+  @override
+  void onTapDown(TapDownInfo info) {
+    super.onTapDown(info);
+    if (!isBgMusicPlaying) {
+      isBgMusicPlaying = true;
+      FlameAudio.loopLongAudio('bg-music.mp3');
     }
   }
 
