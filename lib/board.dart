@@ -127,4 +127,12 @@ class Board extends PositionComponent {
       }
     }
   }
+
+  /// 清空所有数据行
+  void clear() {
+    cells.clear();
+    for (var i = 0; i < boardRows; i++) {
+      cells.add(List.filled(boardCols, null));
+    }
+  }
 }

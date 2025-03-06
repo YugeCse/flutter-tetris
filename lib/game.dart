@@ -18,10 +18,31 @@ class TetrisGame extends FlameGame with KeyboardEvents {
   /// 计时更新方块自动下落
   int timeMillis = 0;
 
+  /// 是否允许运行
+  bool allowRun = true;
+
+  /// 方块下落速度
+  double fallDownSpeed = 1.0;
+
   @override
   FutureOr<void> onLoad() async {
     add(_board = Board());
     _board?.add(_curBlock = Block.generate());
+  }
+
+  /// 暂停Game
+  void pause() {
+    allowRun = false; //暂停Game
+  }
+
+  /// 重新开始
+  void restart() {
+    _board?.clear();
+    if (_curBlock != null) {
+      _curBlock?.removeFromParent();
+    }
+    fallDownSpeed = 1.0; //重置下落速度
+    allowRun = true; //允许Game继续运行
   }
 
   @override
@@ -29,7 +50,7 @@ class TetrisGame extends FlameGame with KeyboardEvents {
     super.update(dt);
     var curMillis = DateTime.now().millisecondsSinceEpoch;
     var diffMillis = curMillis - timeMillis;
-    if (diffMillis < 1000) return;
+    if (!allowRun || diffMillis < fallDownSpeed * 1000) return;
     timeMillis = curMillis;
     if (_curBlock?.moveDown(_board!) == false) {
       _board?.mergeBlock(_curBlock!);
