@@ -89,22 +89,24 @@ class Board extends PositionComponent {
     for (var y = 0; y < boardRows; y++) {
       for (var x = 0; x < boardCols; x++) {
         if (cells[y][x] != null) {
-          canvas.drawRect(
-            Rect.fromLTWH(
+          canvas.drawRRect(
+            RRect.fromLTRBR(
               x * Block.gridSize,
               y * Block.gridSize,
-              Block.gridSize,
-              Block.gridSize,
+              (x + 1) * Block.gridSize,
+              (y + 1) * Block.gridSize,
+              Radius.circular(5),
             ),
             Paint()..color = cells[y][x]!,
           );
         }
-        canvas.drawRect(
-          Rect.fromLTWH(
+        canvas.drawRRect(
+          RRect.fromLTRBR(
             x * Block.gridSize,
             y * Block.gridSize,
-            Block.gridSize,
-            Block.gridSize,
+            (x + 1) * Block.gridSize,
+            (y + 1) * Block.gridSize,
+            Radius.circular(5),
           ),
           Paint()
             ..style = PaintingStyle.stroke

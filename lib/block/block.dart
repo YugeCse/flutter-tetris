@@ -7,6 +7,8 @@ import 'package:tetris/block/j2_block.dart';
 import 'package:tetris/block/l_block.dart';
 import 'package:tetris/block/o_block.dart';
 import 'package:tetris/block/t_block.dart';
+import 'package:tetris/block/z2_block.dart';
+import 'package:tetris/block/z_block.dart';
 import 'package:tetris/board.dart';
 
 abstract class Block extends PositionComponent {
@@ -119,21 +121,18 @@ abstract class Block extends PositionComponent {
   }
 
   static Block generate() {
-    var rand = Random(DateTime.now().millisecondsSinceEpoch).nextInt(5);
-    Block block;
-    switch (rand) {
-      case 0:
-        block = LBlock();
-      case 1:
-        block = OBlock();
-      case 2:
-        block = JBlock();
-      case 3:
-        block = J2Block();
-      default:
-        block = TBlock();
-    }
-    return block
+    var seed = DateTime.now().millisecondsSinceEpoch;
+    final blockFactories = [
+      () => LBlock(),
+      () => OBlock(),
+      () => JBlock(),
+      () => J2Block(),
+      () => ZBlock(),
+      () => Z2Block(),
+      () => TBlock(),
+    ];
+    var rand = Random(seed).nextInt(blockFactories.length);
+    return blockFactories[rand]()
       ..position = Vector2(
         (Board.boardCols - Block.maxGridCols) / 2 * Block.gridSize,
         0,
