@@ -120,7 +120,7 @@ abstract class Block extends PositionComponent {
       () => TBlock(),
     ];
     var rand = Random(seed).nextInt(blockFactories.length);
-    var currentBlock = blockFactories[rand]() as Block;
+    var currentBlock = blockFactories[rand]();
     var currentBlockShape = currentBlock.shape;
     var (mxCols, _) = Utils.computeShpaeFillMaxNum(currentBlockShape);
     int xCoordinate = ((BoardComponent.boardCols - mxCols) / 2).floor();
