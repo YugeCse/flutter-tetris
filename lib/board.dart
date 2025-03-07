@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/components.dart' hide Block;
 import 'package:flame/flame.dart';
+import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
 import 'package:tetris/block/block.dart';
 import 'package:tetris/utils.dart';
@@ -49,9 +50,18 @@ class Board extends PositionComponent {
       ),
     );
     add(
-      scoreTextComponent = TextComponent(
-        text: 'Score: 0',
+      TextComponent(
+        text: 'My Score: ',
         position: Vector2((boardCols + 1) * Block.gridSize, 6 * Block.gridSize),
+      ),
+    );
+    add(
+      scoreTextComponent = TextComponent(
+        text: '0',
+        textRenderer: TextPaint(
+          style: TextStyle(fontSize: 60, color: Color(0xFFFFFFFF)),
+        ),
+        position: Vector2((boardCols + 1) * Block.gridSize, 7 * Block.gridSize),
       ),
     );
     add(
@@ -141,7 +151,7 @@ class Board extends PositionComponent {
       if (cells[y].every((element) => element != null)) {
         cells.removeAt(y);
         cells.insert(0, List.filled(boardCols, null));
-        scoreTextComponent?.text = "Score: ${++scoreNumber}";
+        scoreTextComponent?.text = "${++scoreNumber}";
       }
     }
   }
@@ -234,7 +244,7 @@ class Board extends PositionComponent {
   /// 清空所有数据行
   void clear() {
     scoreNumber = 0;
-    scoreTextComponent?.text = "Score：0";
+    scoreTextComponent?.text = "0";
     cells.clear();
     for (var i = 0; i < boardRows; i++) {
       cells.add(List.filled(boardCols, null));
