@@ -73,19 +73,15 @@ abstract class Block extends PositionComponent {
 
   void rotate(Board board) {
     var targetRotateIndex = _curRotateIndex;
-    if (targetRotateIndex + 1 < shapes.length) {
-      targetRotateIndex++;
-      if (board.isCollision2(
-        position.x,
-        position.y,
-        shapes[targetRotateIndex],
-      )) {
-        return;
-      }
-      _curRotateIndex = targetRotateIndex;
+    if (++targetRotateIndex < shapes.length) {
     } else {
-      _curRotateIndex = 0;
+      targetRotateIndex = 0;
     }
+    if (board.isCollision2(position.x, position.y, shapes[targetRotateIndex])) {
+      debugPrint('发生了碰撞，不能变形 $runtimeType');
+      return;
+    }
+    _curRotateIndex = targetRotateIndex; //取新的形状值
     debugPrint('rotate $_curRotateIndex, shapes = ${shapes[_curRotateIndex]}');
   }
 

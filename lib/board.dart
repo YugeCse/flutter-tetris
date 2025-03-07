@@ -9,13 +9,13 @@ import 'package:tetris/utils.dart';
 
 /// 游戏面板类
 class Board extends PositionComponent {
-  /// 面板的列数
+  /// 面板的列数: 10
   static final int boardCols = 10;
 
-  /// 面板的行数
+  /// 面板的行数: 15
   static final int boardRows = 15;
 
-  /// 边栏区
+  /// 边栏区: 5
   static final int boardSideCols = 5;
 
   /// 面板所有的格子数
@@ -110,7 +110,7 @@ class Board extends PositionComponent {
     for (var y = 0; y < Block.maxGridRows; y++) {
       for (var x = 0; x < Block.maxGridCols; x++) {
         var index = y * Block.maxGridCols + x;
-        var value = shape[index];
+        var value = shape[index]; //获取单元格的取值
         if (value == 1) {
           var bx = (xPosition / Block.gridSize).round() + x;
           var by = (yPosition / Block.gridSize).round() + y;
