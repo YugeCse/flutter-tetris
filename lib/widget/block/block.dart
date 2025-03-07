@@ -10,7 +10,7 @@ import 'package:tetris/widget/block/t_block.dart';
 import 'package:tetris/widget/block/z2_block.dart';
 import 'package:tetris/widget/block/z_block.dart';
 import 'package:tetris/widget/board_component.dart';
-import 'package:tetris/utils.dart';
+import 'package:tetris/utils/utils.dart';
 
 /// 所有Block的基类
 abstract class Block extends PositionComponent {
@@ -82,7 +82,7 @@ abstract class Block extends PositionComponent {
       return;
     }
     _curRotateIndex = targetRotateIndex; //取新的形状值
-    debugPrint('rotate $_curRotateIndex, shapes = ${shapes[_curRotateIndex]}');
+    // debugPrint('rotate $_curRotateIndex, shapes = ${shapes[_curRotateIndex]}');
   }
 
   @override

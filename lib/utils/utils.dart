@@ -1,4 +1,3 @@
-import 'package:flutter/rendering.dart';
 import 'package:tetris/widget/block/block.dart';
 
 /// 工具类
@@ -25,7 +24,7 @@ class Utils {
       }
       if (yHas) yMaxNum++;
     }
-    debugPrint('xMaxNum: $xMaxNum, yMaxNum: $yMaxNum');
+    // debugPrint('xMaxNum: $xMaxNum, yMaxNum: $yMaxNum');
     return (xMaxNum, yMaxNum);
   }
 }

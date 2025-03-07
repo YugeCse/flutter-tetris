@@ -1,9 +1,10 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
 /// 游戏结束的场景
-class GameOverScene extends PositionComponent with HasGameRef {
+class GameOverScene extends PositionComponent with HasGameRef, TapCallbacks {
   TextComponent? _titleComponent;
   ButtonComponent? _buttonComponent;
 
@@ -50,5 +51,11 @@ class GameOverScene extends PositionComponent with HasGameRef {
       Rect.fromLTWH(0, 0, width, height),
       Paint()..color = Colors.black87,
     );
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    event.handled = true;
+    super.onTapDown(event);
   }
 }

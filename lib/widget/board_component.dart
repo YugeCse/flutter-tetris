@@ -5,7 +5,7 @@ import 'package:flame/flame.dart';
 import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
 import 'package:tetris/widget/block/block.dart';
-import 'package:tetris/utils.dart';
+import 'package:tetris/utils/utils.dart';
 import 'package:tetris/widget/sound_component.dart';
 
 /// 游戏面板类
@@ -105,7 +105,7 @@ class BoardComponent extends PositionComponent {
               bx >= boardCols ||
               by >= boardRows ||
               (by >= 0 && cells[by][bx] != null)) {
-            debugPrint('碰撞检测：x=$bx, y=$by');
+            // debugPrint('碰撞检测：x=$bx, y=$by');
             return true;
           }
         }
@@ -130,7 +130,7 @@ class BoardComponent extends PositionComponent {
               bx >= boardCols ||
               by >= boardRows ||
               (by >= 0 && cells[by][bx] != null)) {
-            debugPrint('碰撞检测：x=$bx, y=$by');
+            // debugPrint('碰撞检测：x=$bx, y=$by');
             return true;
           }
         }
