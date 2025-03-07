@@ -112,8 +112,8 @@ class Board extends PositionComponent {
         var index = y * Block.maxGridCols + x;
         var value = shape[index];
         if (value == 1) {
-          var bx = (xPosition / Block.gridSize).floor() + x;
-          var by = (yPosition / Block.gridSize).floor() + y;
+          var bx = (xPosition / Block.gridSize).round() + x;
+          var by = (yPosition / Block.gridSize).round() + y;
           // 检查是否超出边界或与墙碰撞
           if (bx < 0 ||
               bx >= boardCols ||
