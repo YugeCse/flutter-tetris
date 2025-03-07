@@ -40,6 +40,7 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
     _board?.add(_curBlock = Block.generate());
     _nextBlock = Block.generate(); //生成下一个方块
     _board?.expectNextBlockShape = _nextBlock!.shape;
+    _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
   }
 
   @override
@@ -77,6 +78,7 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
       _board?.add(_curBlock = _nextBlock!);
       _nextBlock = Block.generate();
       _board?.expectNextBlockShape = _nextBlock!.shape;
+      _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
     }
   }
 

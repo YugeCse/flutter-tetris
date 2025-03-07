@@ -24,6 +24,9 @@ class Board extends PositionComponent {
   /// 预测的下一个方块
   List<int> expectNextBlockShape = [];
 
+  /// 预测的下一个方块的颜色
+  Color expectNextBlockColor = Colors.blue;
+
   /// 当前得分数字
   int scoreNumber = 0;
 
@@ -158,6 +161,7 @@ class Board extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    canvas.drawColor(const Color.fromARGB(221, 151, 151, 151), BlendMode.src);
     canvas.drawRRect(
       RRect.fromLTRBR(
         0,
@@ -167,6 +171,7 @@ class Board extends PositionComponent {
         Radius.circular(5),
       ),
       Paint()
+        ..strokeWidth = 2.0
         ..style = PaintingStyle.stroke
         ..color = const Color.fromARGB(255, 64, 64, 64),
     );
@@ -224,7 +229,7 @@ class Board extends PositionComponent {
             Radius.circular(5),
           ),
           Paint()
-            ..color = value == 1 ? Colors.greenAccent : Colors.transparent
+            ..color = value == 1 ? expectNextBlockColor : Colors.transparent
             ..style = value == 1 ? PaintingStyle.fill : PaintingStyle.stroke,
         );
       }
@@ -237,7 +242,10 @@ class Board extends PositionComponent {
         Block.gridSize * 5,
         Radius.circular(5),
       ),
-      Paint()..color = const Color.fromARGB(179, 25, 25, 25),
+      Paint()
+        ..strokeWidth = 2.0
+        ..style = PaintingStyle.stroke
+        ..color = const Color.fromARGB(179, 88, 88, 88),
     );
   }
 
