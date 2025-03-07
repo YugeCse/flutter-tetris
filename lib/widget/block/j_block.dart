@@ -1,4 +1,4 @@
-import 'package:tetris/block/block.dart';
+import 'package:tetris/widget/block/block.dart';
 
 class JBlock extends Block {
   @override

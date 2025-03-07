@@ -35,6 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   flame: ^1.25.0
+  flame_svg: ^1.11.6
   flame_audio: ^2.11.0
 
 dev_dependencies:
@@ -64,8 +65,9 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   assets:
-    - assets/audio/bg-music.mp3
-    - assets/images/tetris-city.jpg
+    - assets/assets/
+    - assets/audio/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -4,11 +4,12 @@ import 'package:flame/components.dart' hide Block;
 import 'package:flame/flame.dart';
 import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
-import 'package:tetris/block/block.dart';
+import 'package:tetris/widget/block/block.dart';
 import 'package:tetris/utils.dart';
+import 'package:tetris/widget/sound_component.dart';
 
 /// 游戏面板类
-class Board extends PositionComponent {
+class BoardComponent extends PositionComponent {
   /// 面板的列数: 10
   static final int boardCols = 10;
 
@@ -34,7 +35,7 @@ class Board extends PositionComponent {
   TextComponent? scoreTextComponent;
 
   /// 构造函数，完成面板格子数填充和定义面板大小
-  Board() {
+  BoardComponent() {
     size = Vector2(
       (boardCols + boardSideCols) * Block.gridSize,
       boardRows * Block.gridSize,
@@ -66,6 +67,13 @@ class Board extends PositionComponent {
         ),
         position: Vector2((boardCols + 1) * Block.gridSize, 7 * Block.gridSize),
       ),
+    );
+    add(
+      SoundComponent()
+        ..position = Vector2(
+          (boardCols + 1) * Block.gridSize,
+          10 * Block.gridSize,
+        ),
     );
     add(
       SpriteComponent.fromImage(
@@ -162,41 +170,20 @@ class Board extends PositionComponent {
   @override
   void render(Canvas canvas) {
     canvas.drawColor(const Color.fromARGB(221, 151, 151, 151), BlendMode.src);
-    canvas.drawRRect(
-      RRect.fromLTRBR(
-        0,
-        0,
-        boardCols * Block.gridSize,
-        size.y,
-        Radius.circular(5),
-      ),
-      Paint()
-        ..strokeWidth = 2.0
-        ..style = PaintingStyle.stroke
-        ..color = const Color.fromARGB(255, 64, 64, 64),
-    );
     for (var y = 0; y < boardRows; y++) {
       for (var x = 0; x < boardCols; x++) {
+        var rect = RRect.fromLTRBR(
+          x * Block.gridSize + 1,
+          y * Block.gridSize + 1,
+          (x + 1) * Block.gridSize - 1,
+          (y + 1) * Block.gridSize - 1,
+          Radius.circular(5),
+        );
         if (cells[y][x] != null) {
-          canvas.drawRRect(
-            RRect.fromLTRBR(
-              x * Block.gridSize + 1,
-              y * Block.gridSize + 1,
-              (x + 1) * Block.gridSize - 1,
-              (y + 1) * Block.gridSize - 1,
-              Radius.circular(5),
-            ),
-            Paint()..color = cells[y][x]!,
-          );
+          canvas.drawRRect(rect, Paint()..color = cells[y][x]!);
         }
         canvas.drawRRect(
-          RRect.fromLTRBR(
-            x * Block.gridSize,
-            y * Block.gridSize,
-            (x + 1) * Block.gridSize,
-            (y + 1) * Block.gridSize,
-            Radius.circular(5),
-          ),
+          rect.deflate(1),
           Paint()
             ..style = PaintingStyle.stroke
             ..color = const Color.fromARGB(255, 64, 64, 64),
@@ -209,7 +196,7 @@ class Board extends PositionComponent {
   /// 绘制下一个方块
   void drawNextBlockShape(Canvas canvas) {
     double startY = 1;
-    double startX = Board.boardCols + 1;
+    double startX = BoardComponent.boardCols + 1;
     var (maxX, maxY) = Utils.computeShpaeFillMaxNum(expectNextBlockShape);
     startX += (Block.maxGridCols - maxX) / 2;
     startY += (Block.maxGridRows - maxY) / 2;
@@ -236,9 +223,9 @@ class Board extends PositionComponent {
     }
     canvas.drawRRect(
       RRect.fromLTRBR(
-        (Board.boardCols + 1) * Block.gridSize,
+        (BoardComponent.boardCols + 1) * Block.gridSize,
         Block.gridSize,
-        (Board.boardCols + 5) * Block.gridSize,
+        (BoardComponent.boardCols + 5) * Block.gridSize,
         Block.gridSize * 5,
         Radius.circular(5),
       ),

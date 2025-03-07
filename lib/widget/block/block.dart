@@ -2,14 +2,14 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import 'package:tetris/block/J_block.dart';
-import 'package:tetris/block/j2_block.dart';
-import 'package:tetris/block/l_block.dart';
-import 'package:tetris/block/o_block.dart';
-import 'package:tetris/block/t_block.dart';
-import 'package:tetris/block/z2_block.dart';
-import 'package:tetris/block/z_block.dart';
-import 'package:tetris/board.dart';
+import 'package:tetris/widget/block/J_block.dart';
+import 'package:tetris/widget/block/j2_block.dart';
+import 'package:tetris/widget/block/l_block.dart';
+import 'package:tetris/widget/block/o_block.dart';
+import 'package:tetris/widget/block/t_block.dart';
+import 'package:tetris/widget/block/z2_block.dart';
+import 'package:tetris/widget/block/z_block.dart';
+import 'package:tetris/widget/board_component.dart';
 import 'package:tetris/utils.dart';
 
 /// 所有Block的基类
@@ -48,21 +48,21 @@ abstract class Block extends PositionComponent {
     size = Vector2(gridSize * maxGridCols, gridSize * maxGridRows);
   }
 
-  void moveLeft(Board board) {
+  void moveLeft(BoardComponent board) {
     position.x -= gridSize;
     if (board.isCollision(this)) {
       position.x += gridSize;
     }
   }
 
-  void moveRight(Board board) {
+  void moveRight(BoardComponent board) {
     position.x += gridSize;
     if (board.isCollision(this)) {
       position.x -= gridSize;
     }
   }
 
-  bool moveDown(Board board) {
+  bool moveDown(BoardComponent board) {
     position.y += gridSize;
     if (board.isCollision(this)) {
       position.y -= gridSize;
@@ -71,7 +71,7 @@ abstract class Block extends PositionComponent {
     return true;
   }
 
-  void rotate(Board board) {
+  void rotate(BoardComponent board) {
     var targetRotateIndex = _curRotateIndex;
     if (++targetRotateIndex < shapes.length) {
     } else {
@@ -120,10 +120,10 @@ abstract class Block extends PositionComponent {
       () => TBlock(),
     ];
     var rand = Random(seed).nextInt(blockFactories.length);
-    var currentBlock = blockFactories[rand]();
+    var currentBlock = blockFactories[rand]() as Block;
     var currentBlockShape = currentBlock.shape;
     var (mxCols, _) = Utils.computeShpaeFillMaxNum(currentBlockShape);
-    int xCoordinate = ((Board.boardCols - mxCols) / 2).floor();
+    int xCoordinate = ((BoardComponent.boardCols - mxCols) / 2).floor();
     return currentBlock..position = Vector2(xCoordinate * Block.gridSize, 0);
   }
 }

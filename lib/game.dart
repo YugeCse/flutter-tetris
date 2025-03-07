@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:flame/components.dart' show Anchor;
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tetris/block/block.dart';
-import 'package:tetris/board.dart';
+import 'package:tetris/scene/game_over_scene.dart';
+import 'package:tetris/widget/block/block.dart';
+import 'package:tetris/widget/board_component.dart';
 
 /// 主游戏类
-class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
+class TetrisGame extends FlameGame with KeyboardEvents {
   /// 游戏面板
-  Board? _board;
+  BoardComponent? _board;
 
   /// 当前方块
   Block? _curBlock;
@@ -29,12 +29,12 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
   /// 方块下落速度
   double fallDownSpeed = 1.0;
 
-  /// 是否播放背景音乐
-  bool isBgMusicPlaying = false;
+  /// 游戏结束场景
+  GameOverScene? _gameOverScene;
 
   @override
   FutureOr<void> onLoad() async {
-    add(_board = Board()..anchor = Anchor.topLeft);
+    add(_board = BoardComponent()..anchor = Anchor.topLeft);
     _board?.position.x = (size.x - _board!.size.x) / 2;
     _board?.position.y = (size.y - _board!.size.y) / 2;
     _board?.add(_curBlock = Block.generate());
@@ -57,12 +57,17 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
 
   /// 重新开始
   void restart() {
+    _gameOverScene?.removeFromParent();
     _board?.clear();
     if (_curBlock != null) {
       _curBlock?.removeFromParent();
     }
     fallDownSpeed = 1.0; //重置下落速度
     allowRun = true; //允许Game继续运行
+    _board?.add(_curBlock = Block.generate());
+    _nextBlock = Block.generate(); //生成下一个方块
+    _board?.expectNextBlockShape = _nextBlock!.shape;
+    _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
   }
 
   @override
@@ -76,18 +81,15 @@ class TetrisGame extends FlameGame with KeyboardEvents, TapDetector {
       _board?.mergeBlock(_curBlock!);
       _curBlock?.removeFromParent();
       _board?.add(_curBlock = _nextBlock!);
+      if (_board?.isCollision(_curBlock!) == true) {
+        allowRun = false;
+        debugPrint('Game Over');
+        add(_gameOverScene = GameOverScene()..onRestartGame = restart);
+        return;
+      }
       _nextBlock = Block.generate();
       _board?.expectNextBlockShape = _nextBlock!.shape;
       _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
-    }
-  }
-
-  @override
-  void onTapDown(TapDownInfo info) {
-    super.onTapDown(info);
-    if (!isBgMusicPlaying) {
-      isBgMusicPlaying = true;
-      FlameAudio.loopLongAudio('bg-music.mp3');
     }
   }
 

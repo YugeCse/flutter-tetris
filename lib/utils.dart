@@ -1,5 +1,5 @@
 import 'package:flutter/rendering.dart';
-import 'package:tetris/block/block.dart';
+import 'package:tetris/widget/block/block.dart';
 
 /// 工具类
 class Utils {
