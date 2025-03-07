@@ -34,6 +34,12 @@ class BoardComponent extends PositionComponent {
   /// 当前得分组件
   TextComponent? scoreTextComponent;
 
+  /// 当前等级数字
+  int levelNumber = 1;
+
+  /// 当前等级组件
+  TextComponent? levelTextComponent;
+
   /// 构造函数，完成面板格子数填充和定义面板大小
   BoardComponent() {
     size = Vector2(
@@ -69,10 +75,16 @@ class BoardComponent extends PositionComponent {
       ),
     );
     add(
+      levelTextComponent = TextComponent(
+        text: 'My Level:   $levelNumber',
+        position: Vector2((boardCols + 1) * Block.gridSize, 9 * Block.gridSize),
+      ),
+    );
+    add(
       SoundComponent()
         ..position = Vector2(
           (boardCols + 1) * Block.gridSize,
-          10 * Block.gridSize,
+          11 * Block.gridSize,
         ),
     );
     add(
@@ -165,6 +177,12 @@ class BoardComponent extends PositionComponent {
         scoreTextComponent?.text = "${++scoreNumber}";
       }
     }
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    levelTextComponent?.text = 'My Level:   $levelNumber';
   }
 
   @override

@@ -135,6 +135,7 @@ class TetrisGame extends FlameGame with KeyboardEvents {
           _board!.scoreNumber <= levelInfo.maxScore) {
         gameLevel = levelInfo.level;
         fallDownSpeed = levelInfo.speed;
+        _board?.levelNumber = gameLevel;
       }
     }
     debugPrint('Level Up: $gameLevel, Game Speed: $fallDownSpeed');
