@@ -1,14 +1,7 @@
-# tetris
+# 俄罗斯方块
 
-Flutter Tetris game
+试玩地址：[https://yugecse.github.io/flutter-tetris/](https://yugecse.github.io/flutter-tetris/)
+
+游戏使用Flutter + Flame 开发，目前仅支持web端。
 
 ![Screenshot](./docs/preview.png)
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
