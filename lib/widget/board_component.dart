@@ -68,17 +68,16 @@ class BoardComponent extends PositionComponent {
         text: 'My Score:',
         position: Vector2(
           (boardCols + 0.5) * Block.gridSize,
-          5.5 * Block.gridSize,
+          5.8 * Block.gridSize,
         ),
       ),
     );
     add(
       scoreTextComponent = TextComponent(
         text: '0',
-        anchor: Anchor.center,
         position: Vector2(
-          (boardCols + 0.8) * Block.gridSize,
-          7.2 * Block.gridSize,
+          (boardCols + 0.5) * Block.gridSize,
+          6.8 * Block.gridSize,
         ),
         size: Vector2(Block.maxGridCols * Block.gridSize, 60),
         textRenderer: TextPaint(
