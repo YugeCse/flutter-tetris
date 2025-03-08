@@ -262,13 +262,13 @@ class BoardComponent extends PositionComponent {
 
   /// 清空所有数据行
   void clear() {
-    scoreNumber = 0;
-    levelNumber = 0;
-    scoreTextComponent?.text = "0";
-    levelTextComponent?.text = "My Level:   0";
     cells.clear();
     for (var i = 0; i < boardRows; i++) {
       cells.add(List.filled(boardCols, null));
     }
+    scoreNumber = 0;
+    levelNumber = 1;
+    scoreTextComponent?.text = "0";
+    levelTextComponent?.text = "My Level:  1";
   }
 }

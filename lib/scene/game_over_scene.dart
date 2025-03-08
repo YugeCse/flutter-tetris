@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 
 /// 游戏结束的场景
 class GameOverScene extends PositionComponent with HasGameRef, TapCallbacks {
+  /// 标题文本组件
   TextComponent? _titleComponent;
+
+  /// 重新开始按钮组件
   ButtonComponent? _buttonComponent;
 
+  /// 重启游戏回调方法
   Function? onRestartGame;
 
   @override
