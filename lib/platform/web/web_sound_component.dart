@@ -6,7 +6,7 @@ import 'package:flame_svg/flame_svg.dart';
 import 'package:tetris/utils/sound.dart';
 
 /// This component is used to control the background music.
-class SoundComponent extends PositionComponent with TapCallbacks {
+class WebSoundComponent extends PositionComponent with TapCallbacks {
   bool isSoundOpen = false;
   Svg? soundOpenSvg;
   Svg? soundSilentSvg;

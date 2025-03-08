@@ -4,7 +4,7 @@ import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 
 /// 游戏结束的场景
-class GameOverScene extends PositionComponent with HasGameRef, TapCallbacks {
+class WebGameOverScene extends PositionComponent with HasGameRef, TapCallbacks {
   /// 标题文本组件
   TextComponent? _titleComponent;
 

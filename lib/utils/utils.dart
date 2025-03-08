@@ -1,4 +1,4 @@
-import 'package:tetris/widget/block/block.dart';
+import 'package:tetris/block/block.dart';
 
 /// 工具类
 class Utils {

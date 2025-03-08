@@ -6,13 +6,13 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tetris/data/level_info.dart';
-import 'package:tetris/scene/game_over_scene.dart';
+import 'package:tetris/platform/web/web_game_over.dart';
 import 'package:tetris/utils/sound.dart';
-import 'package:tetris/widget/block/block.dart';
-import 'package:tetris/widget/board_component.dart';
+import 'package:tetris/block/block.dart';
+import 'package:tetris/platform/web/web_board_component.dart';
 
 /// 主游戏类
-class TetrisGame extends FlameGame with KeyboardEvents {
+class WebTetrisGame extends FlameGame with KeyboardEvents {
   /// 游戏等级信息
   /// + 1-20 1.0
   /// + 21-50 0.9
@@ -50,7 +50,7 @@ class TetrisGame extends FlameGame with KeyboardEvents {
   bool allowRun = true;
 
   /// 游戏面板
-  BoardComponent? _board;
+  WebBoardComponent? _board;
 
   /// 当前方块
   Block? _curBlock;
@@ -59,15 +59,19 @@ class TetrisGame extends FlameGame with KeyboardEvents {
   Block? _nextBlock;
 
   /// 游戏结束场景
-  GameOverScene? _gameOverScene;
+  WebGameOverScene? _gameOverScene;
 
   @override
   FutureOr<void> onLoad() async {
-    add(_board = BoardComponent()..anchor = Anchor.topLeft);
+    add(_board = WebBoardComponent()..anchor = Anchor.topLeft);
     _board?.position.x = (size.x - _board!.size.x) / 2;
     _board?.position.y = (size.y - _board!.size.y) / 2;
-    _board?.add(_curBlock = Block.generate());
-    _nextBlock = Block.generate(); //生成下一个方块
+    _board?.add(
+      _curBlock = Block.generate(gridCols: WebBoardComponent.boardCols),
+    );
+    _nextBlock = Block.generate(
+      gridCols: WebBoardComponent.boardCols,
+    ); //生成下一个方块
     _board?.expectNextBlockShape = _nextBlock!.shape;
     _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
   }
@@ -115,8 +119,12 @@ class TetrisGame extends FlameGame with KeyboardEvents {
     gameLevel = 1; //重置游戏等级
     fallDownSpeed = 1.0; //重置下落速度
     allowRun = true; //允许Game继续运行
-    _board?.add(_curBlock = Block.generate());
-    _nextBlock = Block.generate(); //生成下一个方块
+    _board?.add(
+      _curBlock = Block.generate(gridCols: WebBoardComponent.boardCols),
+    );
+    _nextBlock = Block.generate(
+      gridCols: WebBoardComponent.boardCols,
+    ); //生成下一个方块
     _board?.expectNextBlockShape = _nextBlock!.shape;
     _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
   }
@@ -137,10 +145,10 @@ class TetrisGame extends FlameGame with KeyboardEvents {
         allowRun = false;
         debugPrint('Game Over');
         Sound.playGameOverSound(); //播放游戏结束音效
-        add(_gameOverScene = GameOverScene()..onRestartGame = restart);
+        add(_gameOverScene = WebGameOverScene()..onRestartGame = restart);
         return;
       }
-      _nextBlock = Block.generate();
+      _nextBlock = Block.generate(gridCols: WebBoardComponent.boardCols);
       _board?.expectNextBlockShape = _nextBlock!.shape;
       _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
     }

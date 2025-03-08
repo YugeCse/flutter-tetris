@@ -5,13 +5,15 @@ import 'package:flame/flame.dart';
 import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
 import 'package:tetris/data/offset_int.dart';
+import 'package:tetris/platform/game_collision_detector.dart';
+import 'package:tetris/utils/collision.dart';
 import 'package:tetris/utils/sound.dart';
-import 'package:tetris/widget/block/block.dart';
+import 'package:tetris/block/block.dart';
 import 'package:tetris/utils/utils.dart';
-import 'package:tetris/widget/sound_component.dart';
+import 'package:tetris/platform/web/web_sound_component.dart';
 
 /// 游戏面板类
-class BoardComponent extends PositionComponent {
+class WebBoardComponent extends PositionComponent with GameCollisionDetector {
   /// 面板的列数: 10
   static final int boardCols = 10;
 
@@ -43,7 +45,7 @@ class BoardComponent extends PositionComponent {
   TextComponent? levelTextComponent;
 
   /// 构造函数，完成面板格子数填充和定义面板大小
-  BoardComponent() {
+  WebBoardComponent() {
     size = Vector2(
       (boardCols + boardSideCols) * Block.gridSize,
       boardRows * Block.gridSize,
@@ -96,7 +98,7 @@ class BoardComponent extends PositionComponent {
       ),
     );
     add(
-      SoundComponent()
+      WebSoundComponent()
         ..position = Vector2(
           (boardCols + 0.5) * Block.gridSize,
           11 * Block.gridSize,
@@ -121,51 +123,23 @@ class BoardComponent extends PositionComponent {
   }
 
   /// 检测碰撞，与边缘碰撞或者已经填充的方块碰撞
-  bool isCollision(Block block) {
-    for (var y = 0; y < Block.maxGridRows; y++) {
-      for (var x = 0; x < Block.maxGridCols; x++) {
-        var index = y * Block.maxGridCols + x;
-        var value = block.shape[index];
-        if (value == 1) {
-          var bx = (block.position.x / Block.gridSize).floor() + x;
-          var by = (block.position.y / Block.gridSize).floor() + y;
-          // 检查是否超出边界或与墙碰撞
-          if (bx < 0 ||
-              bx >= boardCols ||
-              by >= boardRows ||
-              (by >= 0 && cells[by][bx] != null)) {
-            // debugPrint('碰撞检测：x=$bx, y=$by');
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
+  @override
+  bool isCollision(Block block) =>
+      Collision.isCollision(block, cells, boardRows, boardCols);
 
   /// 碰撞检测2
   /// - xPosition, yPosition: 方块左上角坐标
   /// - shape: 方块形状
+  @override
   bool isCollision2(double xPosition, double yPosition, List<int> shape) {
-    for (var y = 0; y < Block.maxGridRows; y++) {
-      for (var x = 0; x < Block.maxGridCols; x++) {
-        var index = y * Block.maxGridCols + x;
-        var value = shape[index]; //获取单元格的取值
-        if (value == 1) {
-          var bx = (xPosition / Block.gridSize).round() + x;
-          var by = (yPosition / Block.gridSize).round() + y;
-          // 检查是否超出边界或与墙碰撞
-          if (bx < 0 ||
-              bx >= boardCols ||
-              by >= boardRows ||
-              (by >= 0 && cells[by][bx] != null)) {
-            // debugPrint('碰撞检测：x=$bx, y=$by');
-            return true;
-          }
-        }
-      }
-    }
-    return false;
+    return Collision.isCollision2(
+      cells,
+      shape,
+      xPosition,
+      yPosition,
+      boardRows,
+      boardCols,
+    );
   }
 
   /// 合并方块
@@ -220,8 +194,8 @@ class BoardComponent extends PositionComponent {
         Rect.fromLTWH(
           0,
           0,
-          BoardComponent.boardCols * Block.gridSize,
-          BoardComponent.boardRows * Block.gridSize,
+          WebBoardComponent.boardCols * Block.gridSize,
+          WebBoardComponent.boardRows * Block.gridSize,
         ),
         Radius.circular(5),
       ),
@@ -241,7 +215,7 @@ class BoardComponent extends PositionComponent {
   /// 绘制下一个方块
   void drawNextBlockShape(Canvas canvas) {
     double startY = 1;
-    double startX = BoardComponent.boardCols + 0.5;
+    double startX = WebBoardComponent.boardCols + 0.5;
     var (maxX, maxY) = Utils.computeShpaeFillMaxNum(expectNextBlockShape);
     startX += (Block.maxGridCols - maxX) / 2;
     startY += (Block.maxGridRows - maxY) / 2;
