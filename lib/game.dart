@@ -73,6 +73,26 @@ class TetrisGame extends FlameGame with KeyboardEvents {
   }
 
   @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+    var size = _board!.size;
+    var position = _board!.position;
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        position.x - 2,
+        position.y - 2,
+        position.x + size.x + 5,
+        position.y + size.y + 2,
+        Radius.circular(5),
+      ),
+      Paint()
+        ..strokeWidth = 2.0
+        ..style = PaintingStyle.stroke
+        ..color = const Color.fromARGB(51, 2, 2, 2),
+    );
+  }
+
+  @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
     _board?.position.x = (size.x - _board!.size.x) / 2;

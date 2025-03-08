@@ -56,35 +56,49 @@ class BoardComponent extends PositionComponent {
   FutureOr<void> onLoad() async {
     add(
       TextComponent(
-        text: 'The Next Block: ',
-        position: Vector2((boardCols + 1) * Block.gridSize, 0),
+        text: 'THE NEXT BLOCK',
+        position: Vector2(
+          (boardCols + 0.5) * Block.gridSize,
+          0.2 * Block.gridSize,
+        ),
       ),
     );
     add(
       TextComponent(
-        text: 'My Score: ',
-        position: Vector2((boardCols + 1) * Block.gridSize, 6 * Block.gridSize),
+        text: 'My Score:',
+        position: Vector2(
+          (boardCols + 0.5) * Block.gridSize,
+          5.5 * Block.gridSize,
+        ),
       ),
     );
     add(
       scoreTextComponent = TextComponent(
         text: '0',
+        anchor: Anchor.center,
+        position: Vector2(
+          (boardCols + 0.8) * Block.gridSize,
+          7.2 * Block.gridSize,
+        ),
+        size: Vector2(Block.maxGridCols * Block.gridSize, 60),
         textRenderer: TextPaint(
           style: TextStyle(fontSize: 60, color: Color(0xFFFFFFFF)),
         ),
-        position: Vector2((boardCols + 1) * Block.gridSize, 7 * Block.gridSize),
       ),
     );
     add(
       levelTextComponent = TextComponent(
         text: 'My Level:   $levelNumber',
-        position: Vector2((boardCols + 1) * Block.gridSize, 9 * Block.gridSize),
+        position: Vector2(
+          (boardCols + 0.5) * Block.gridSize,
+          9 * Block.gridSize,
+        ),
       ),
     );
     add(
       SoundComponent()
         ..position = Vector2(
-          (boardCols + 1) * Block.gridSize,
+          (boardCols + 0.5) * Block.gridSize,
           11 * Block.gridSize,
         ),
     );
@@ -97,8 +111,10 @@ class BoardComponent extends PositionComponent {
           (Block.maxGridCols * Block.gridSize) / 1200,
         ),
         position: Vector2(
-          Block.gridSize * (boardCols + 1),
-          size.y - (834 * (Block.maxGridCols * Block.gridSize) / 1200),
+          Block.gridSize * (boardCols + 0.5),
+          size.y -
+              (834 * (Block.maxGridCols * Block.gridSize) / 1200 +
+                  Block.gridSize / 3),
         ),
       ),
     );
@@ -220,7 +236,7 @@ class BoardComponent extends PositionComponent {
   /// 绘制下一个方块
   void drawNextBlockShape(Canvas canvas) {
     double startY = 1;
-    double startX = BoardComponent.boardCols + 1;
+    double startX = BoardComponent.boardCols + 0.5;
     var (maxX, maxY) = Utils.computeShpaeFillMaxNum(expectNextBlockShape);
     startX += (Block.maxGridCols - maxX) / 2;
     startY += (Block.maxGridRows - maxY) / 2;
@@ -247,16 +263,16 @@ class BoardComponent extends PositionComponent {
     }
     canvas.drawRRect(
       RRect.fromLTRBR(
-        (BoardComponent.boardCols + 1) * Block.gridSize,
+        (BoardComponent.boardCols + 0.5) * Block.gridSize,
         Block.gridSize,
-        (BoardComponent.boardCols + 5) * Block.gridSize,
+        (BoardComponent.boardCols + 4.5) * Block.gridSize,
         Block.gridSize * 5,
         Radius.circular(5),
       ),
       Paint()
         ..strokeWidth = 2.0
         ..style = PaintingStyle.stroke
-        ..color = const Color.fromARGB(179, 88, 88, 88),
+        ..color = const Color.fromARGB(179, 158, 158, 158),
     );
   }
 
