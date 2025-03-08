@@ -225,7 +225,7 @@ class BoardComponent extends PositionComponent {
           rect.deflate(1),
           Paint()
             ..style = PaintingStyle.stroke
-            ..color = const Color.fromARGB(255, 64, 64, 64),
+            ..color = const Color.fromARGB(255, 134, 134, 134),
         );
       }
     }
@@ -246,16 +246,20 @@ class BoardComponent extends PositionComponent {
             index >= 0 && index < expectNextBlockShape.length
                 ? expectNextBlockShape[index]
                 : 0;
+        var rect = RRect.fromLTRBR(
+          (startX + x) * Block.gridSize + 1,
+          (startY + y) * Block.gridSize + 1,
+          (startX + x + 1) * Block.gridSize - 1,
+          (startY + y + 1) * Block.gridSize - 1,
+          Radius.circular(5),
+        );
         canvas.drawRRect(
-          RRect.fromLTRBR(
-            (startX + x) * Block.gridSize + 1,
-            (startY + y) * Block.gridSize + 1,
-            (startX + x + 1) * Block.gridSize - 1,
-            (startY + y + 1) * Block.gridSize - 1,
-            Radius.circular(5),
-          ),
+          rect,
           Paint()
-            ..color = value == 1 ? expectNextBlockColor : Colors.transparent
+            ..color =
+                value == 1
+                    ? expectNextBlockColor
+                    : const Color.fromARGB(0, 136, 136, 136)
             ..style = value == 1 ? PaintingStyle.fill : PaintingStyle.stroke,
         );
       }
