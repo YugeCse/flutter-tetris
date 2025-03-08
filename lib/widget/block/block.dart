@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:tetris/data/offset_int.dart';
 import 'package:tetris/widget/block/J_block.dart';
 import 'package:tetris/widget/block/j2_block.dart';
 import 'package:tetris/widget/block/l_block.dart';
@@ -130,18 +131,16 @@ abstract class Block extends PositionComponent {
   /// - startX, startY: 绘制起始坐标
   static void drawCell(
     Canvas canvas,
-    int x,
-    int y, {
-    double startX = 0,
-    double startY = 0,
+    OffsetInt coordinate, {
+    Offset offset = Offset.zero,
     Color renderColor = defaultRenderColor,
   }) {
     var paint = Paint();
     var rect = RRect.fromLTRBR(
-      (startX + x) * Block.gridSize + 2,
-      (startY + y) * Block.gridSize + 2,
-      (startX + x + 1) * Block.gridSize - 2,
-      (startY + y + 1) * Block.gridSize - 2,
+      (offset.dx + coordinate.dx) * Block.gridSize + 2,
+      (offset.dy + coordinate.dy) * Block.gridSize + 2,
+      (offset.dx + coordinate.dx + 1) * Block.gridSize - 2,
+      (offset.dy + coordinate.dy + 1) * Block.gridSize - 2,
       Radius.circular(5),
     );
     canvas.drawRRect(

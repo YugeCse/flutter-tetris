@@ -4,6 +4,7 @@ import 'package:flame/components.dart' hide Block;
 import 'package:flame/flame.dart';
 import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
+import 'package:tetris/data/offset_int.dart';
 import 'package:tetris/utils/sound.dart';
 import 'package:tetris/widget/block/block.dart';
 import 'package:tetris/utils/utils.dart';
@@ -219,8 +220,7 @@ class BoardComponent extends PositionComponent {
       for (var x = 0; x < boardCols; x++) {
         Block.drawCell(
           canvas,
-          x,
-          y,
+          OffsetInt(dx: x, dy: y),
           renderColor:
               cells[y][x] != null ? cells[y][x]! : Block.defaultRenderColor,
         ); //绘制被填充的单元格
@@ -244,10 +244,8 @@ class BoardComponent extends PositionComponent {
                 : 0;
         Block.drawCell(
           canvas,
-          x,
-          y,
-          startX: startX,
-          startY: startY,
+          OffsetInt(dx: x, dy: y),
+          offset: Offset(startX, startY),
           renderColor: value == 1 ? expectNextBlockColor : Colors.transparent,
         ); //绘制被填充的单元格
       }
