@@ -208,28 +208,24 @@ class BoardComponent extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    drawBackground(canvas); //绘制背景
+    drawNextBlockShape(canvas); //绘制下一个方块
+  }
+
+  /// 绘制背景
+  void drawBackground(Canvas canvas) {
     canvas.drawColor(const Color.fromARGB(221, 151, 151, 151), BlendMode.src);
     for (var y = 0; y < boardRows; y++) {
       for (var x = 0; x < boardCols; x++) {
-        var rect = RRect.fromLTRBR(
-          x * Block.gridSize + 1,
-          y * Block.gridSize + 1,
-          (x + 1) * Block.gridSize - 1,
-          (y + 1) * Block.gridSize - 1,
-          Radius.circular(5),
-        );
-        if (cells[y][x] != null) {
-          canvas.drawRRect(rect, Paint()..color = cells[y][x]!);
-        }
-        canvas.drawRRect(
-          rect.deflate(1),
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..color = const Color.fromARGB(255, 134, 134, 134),
-        );
+        Block.drawCell(
+          canvas,
+          x,
+          y,
+          renderColor:
+              cells[y][x] != null ? cells[y][x]! : Block.defaultRenderColor,
+        ); //绘制被填充的单元格
       }
     }
-    drawNextBlockShape(canvas); //绘制下一个方块
   }
 
   /// 绘制下一个方块
@@ -246,37 +242,16 @@ class BoardComponent extends PositionComponent {
             index >= 0 && index < expectNextBlockShape.length
                 ? expectNextBlockShape[index]
                 : 0;
-        var rect = RRect.fromLTRBR(
-          (startX + x) * Block.gridSize + 1,
-          (startY + y) * Block.gridSize + 1,
-          (startX + x + 1) * Block.gridSize - 1,
-          (startY + y + 1) * Block.gridSize - 1,
-          Radius.circular(5),
-        );
-        canvas.drawRRect(
-          rect,
-          Paint()
-            ..color =
-                value == 1
-                    ? expectNextBlockColor
-                    : const Color.fromARGB(0, 136, 136, 136)
-            ..style = value == 1 ? PaintingStyle.fill : PaintingStyle.stroke,
-        );
+        Block.drawCell(
+          canvas,
+          x,
+          y,
+          startX: startX,
+          startY: startY,
+          renderColor: value == 1 ? expectNextBlockColor : Colors.transparent,
+        ); //绘制被填充的单元格
       }
     }
-    canvas.drawRRect(
-      RRect.fromLTRBR(
-        (BoardComponent.boardCols + 0.5) * Block.gridSize,
-        Block.gridSize,
-        (BoardComponent.boardCols + 4.5) * Block.gridSize,
-        Block.gridSize * 5,
-        Radius.circular(5),
-      ),
-      Paint()
-        ..strokeWidth = 2.0
-        ..style = PaintingStyle.stroke
-        ..color = const Color.fromARGB(179, 158, 158, 158),
-    );
   }
 
   /// 清空所有数据行

@@ -92,19 +92,74 @@ abstract class Block extends PositionComponent {
       for (var x = 0; x < maxGridCols; x++) {
         var index = y * maxGridCols + x;
         if (shape[index] == 1) {
+          var rect = RRect.fromLTRBR(
+            x * gridSize + 2,
+            y * gridSize + 2,
+            (x + 1) * gridSize - 2,
+            (y + 1) * gridSize - 2,
+            Radius.circular(3),
+          );
           canvas.drawRRect(
-            RRect.fromLTRBR(
-              x * gridSize + 1,
-              y * gridSize + 1,
-              (x + 1) * gridSize - 1,
-              (y + 1) * gridSize - 1,
-              Radius.circular(5),
+            rect.deflate(2.0),
+            Paint()
+              ..strokeWidth = 3.0
+              ..color = tetrisColor
+              ..style = PaintingStyle.stroke,
+          );
+          canvas.drawRRect(
+            RRect.fromRectAndRadius(
+              rect.deflate(gridSize / 4.2).outerRect,
+              Radius.circular(3),
             ),
-            Paint()..color = tetrisColor,
+            Paint()
+              ..color = tetrisColor
+              ..style = PaintingStyle.fill,
           );
         }
       }
     }
+  }
+
+  /// 绘制方块的默认颜色
+  static const defaultRenderColor = Color.fromARGB(255, 154, 154, 154);
+
+  /// 绘制单元格
+  /// - canvas: 画布
+  /// - x, y: 单元格坐标
+  /// - renderColor: 单元格颜色
+  /// - startX, startY: 绘制起始坐标
+  static void drawCell(
+    Canvas canvas,
+    int x,
+    int y, {
+    double startX = 0,
+    double startY = 0,
+    Color renderColor = defaultRenderColor,
+  }) {
+    var paint = Paint();
+    var rect = RRect.fromLTRBR(
+      (startX + x) * Block.gridSize + 2,
+      (startY + y) * Block.gridSize + 2,
+      (startX + x + 1) * Block.gridSize - 2,
+      (startY + y + 1) * Block.gridSize - 2,
+      Radius.circular(5),
+    );
+    canvas.drawRRect(
+      rect.deflate(2.0),
+      paint
+        ..strokeWidth = 3.0
+        ..color = renderColor
+        ..style = PaintingStyle.stroke,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        rect.deflate(Block.gridSize / 4.2).outerRect,
+        Radius.circular(3),
+      ),
+      paint
+        ..color = renderColor
+        ..style = PaintingStyle.fill,
+    );
   }
 
   /// 生成不同的方块内容
