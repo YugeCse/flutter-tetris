@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_svg/flame_svg.dart';
+import 'package:tetris/utils/sound.dart';
 
 /// This component is used to control the background music.
 class SoundComponent extends PositionComponent with TapCallbacks {
@@ -11,7 +11,6 @@ class SoundComponent extends PositionComponent with TapCallbacks {
   Svg? soundOpenSvg;
   Svg? soundSilentSvg;
   SvgComponent? soundSvgComponent;
-  AudioPlayer? backgroundMusicPlayer;
 
   @override
   FutureOr<void> onLoad() async {
@@ -34,13 +33,9 @@ class SoundComponent extends PositionComponent with TapCallbacks {
     super.onTapDown(event);
     isSoundOpen = !isSoundOpen;
     if (isSoundOpen) {
-      if (backgroundMusicPlayer == null) {
-        backgroundMusicPlayer = await FlameAudio.loopLongAudio('bg-music.mp3');
-      } else {
-        backgroundMusicPlayer?.resume();
-      }
+      Sound.playBgMusic();
     } else {
-      backgroundMusicPlayer?.stop();
+      Sound.stopBgMusic();
     }
     soundSvgComponent?.svg = isSoundOpen ? soundOpenSvg : soundSilentSvg;
   }

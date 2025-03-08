@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tetris/data/level_info.dart';
 import 'package:tetris/scene/game_over_scene.dart';
+import 'package:tetris/utils/sound.dart';
 import 'package:tetris/widget/block/block.dart';
 import 'package:tetris/widget/board_component.dart';
 
@@ -114,6 +115,7 @@ class TetrisGame extends FlameGame with KeyboardEvents {
       if (_board?.isCollision(_curBlock!) == true) {
         allowRun = false;
         debugPrint('Game Over');
+        Sound.playGameOverSound(); //播放游戏结束音效
         add(_gameOverScene = GameOverScene()..onRestartGame = restart);
         return;
       }
@@ -153,6 +155,7 @@ class TetrisGame extends FlameGame with KeyboardEvents {
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
           event.logicalKey == LogicalKeyboardKey.keyS) {
         _curBlock?.moveDown(_board!);
+        Sound.playFallDownSound(); //播放下落音效
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
           event.logicalKey == LogicalKeyboardKey.keyA) {
         _curBlock?.moveLeft(_board!);

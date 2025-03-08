@@ -4,6 +4,7 @@ import 'package:flame/components.dart' hide Block;
 import 'package:flame/flame.dart';
 import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
+import 'package:tetris/utils/sound.dart';
 import 'package:tetris/widget/block/block.dart';
 import 'package:tetris/utils/utils.dart';
 import 'package:tetris/widget/sound_component.dart';
@@ -170,12 +171,17 @@ class BoardComponent extends PositionComponent {
 
   /// 清除满行
   void clearLines() {
+    var clearLineCount = 0;
     for (var y = 0; y < boardRows; y++) {
       if (cells[y].every((element) => element != null)) {
+        clearLineCount++;
         cells.removeAt(y);
         cells.insert(0, List.filled(boardCols, null));
         scoreTextComponent?.text = "${++scoreNumber}";
       }
+    }
+    if (clearLineCount > 0) {
+      Sound.playClearLinesSound(); //播放消除音效
     }
   }
 
@@ -257,7 +263,9 @@ class BoardComponent extends PositionComponent {
   /// 清空所有数据行
   void clear() {
     scoreNumber = 0;
+    levelNumber = 0;
     scoreTextComponent?.text = "0";
+    levelTextComponent?.text = "My Level:   0";
     cells.clear();
     for (var i = 0; i < boardRows; i++) {
       cells.add(List.filled(boardCols, null));

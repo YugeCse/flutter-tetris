@@ -25,7 +25,7 @@ class GameOverScene extends PositionComponent with HasGameRef, TapCallbacks {
       _buttonComponent = ButtonComponent(
         anchor: Anchor.center,
         button: TextComponent(
-          text: 'Restart',
+          text: 'RESTART',
           textRenderer: TextPaint(
             style: TextStyle(fontSize: 35, color: Colors.tealAccent),
           ),
