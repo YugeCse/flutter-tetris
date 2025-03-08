@@ -122,7 +122,7 @@ abstract class Block extends PositionComponent {
   }
 
   /// 绘制方块的默认颜色
-  static const defaultRenderColor = Color.fromARGB(255, 154, 154, 154);
+  static const defaultRenderColor = Color.fromARGB(255, 34, 34, 34);
 
   /// 绘制单元格
   /// - canvas: 画布

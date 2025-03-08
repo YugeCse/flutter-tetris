@@ -215,14 +215,24 @@ class BoardComponent extends PositionComponent {
 
   /// 绘制背景
   void drawBackground(Canvas canvas) {
-    canvas.drawColor(const Color.fromARGB(221, 151, 151, 151), BlendMode.src);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          0,
+          0,
+          BoardComponent.boardCols * Block.gridSize,
+          BoardComponent.boardRows * Block.gridSize,
+        ),
+        Radius.circular(5),
+      ),
+      Paint()..color = Colors.black,
+    );
     for (var y = 0; y < boardRows; y++) {
       for (var x = 0; x < boardCols; x++) {
         Block.drawCell(
           canvas,
           OffsetInt(dx: x, dy: y),
-          renderColor:
-              cells[y][x] != null ? cells[y][x]! : Block.defaultRenderColor,
+          renderColor: cells[y][x] ?? Block.defaultRenderColor,
         ); //绘制被填充的单元格
       }
     }
