@@ -35064,13 +35064,15 @@ q.sm6(2)
 q.shD(B.ay)
 q.sbT(B.tA)
 a.is(r,q)},
-D(a){var s,r=this,q=r.p4=r.p2=0,p=r.p3
-if(p!=null)p.spQ("0")
-p=r.R8
-if(p!=null)p.spQ("My Level:   0")
-p=r.k4
+D(a){var s,r,q=this,p=q.k4
 B.b.D(p)
-for(s=t.qS;q<15;++q)p.push(A.az(10,null,!1,s))}}
+for(s=t.qS,r=0;r<15;++r)p.push(A.az(10,null,!1,s))
+q.p2=0
+q.p4=1
+p=q.p3
+if(p!=null)p.spQ("0")
+p=q.R8
+if(p!=null)p.spQ("My Level:  1")}}
 A.A6.prototype={
 $1(a){return a!=null},
 $S:246}
