@@ -24,7 +24,7 @@ class Sound {
   ///播放背景音乐
   static Future<AudioPlayer> playBgMusic({double volume = 0.5}) async {
     if (_bgMusicPlayer == null) {
-      _bgMusicPlayer = await FlameAudio.playLongAudio(
+      _bgMusicPlayer = await FlameAudio.loopLongAudio(
         'bg_music.mp3',
         volume: volume,
       );
