@@ -19,6 +19,7 @@ void main() {
   }
   runApp(GameWidget.controlled(gameFactory: () => gameObject));
   if (Platform.isAndroid) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
     );

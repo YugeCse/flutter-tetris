@@ -18,11 +18,17 @@ class GameScreenViewComponent extends PositionComponent
   /// 游戏表格列数
   int cellColumnCount = 0;
 
-  double gameViewWidth = 0;
+  /// 游戏状态栏高度
+  double gameStatusBarHeight = 0;
 
-  double gameViewHeight = 0;
+  /// 游戏视图宽度
+  double gameViewportWidth = 0;
 
-  double sideViewWidth = 0;
+  /// 游戏视图高度
+  double gameViewportHeight = 0;
+
+  /// 游戏侧边栏视图宽度
+  double sideViewportWidth = 0;
 
   /// 俄罗斯方块的格子
   List<List<Color?>> tetrisCells = [];
@@ -40,14 +46,15 @@ class GameScreenViewComponent extends PositionComponent
   int levelNumber = 1;
 
   GameScreenViewComponent({super.size, super.position}) {
-    gameViewWidth = size.x - viewPadding * 2;
-    gameViewHeight = size.y - viewPadding * 2;
-    sideViewWidth = gameViewWidth * 0.3;
-    gameViewWidth = gameViewWidth - sideViewWidth;
-    cellRowCount = (gameViewHeight / Block.gridSize).round();
-    cellColumnCount = (gameViewWidth / Block.gridSize).round();
-    gameViewWidth = (cellColumnCount * Block.gridSize).toDouble();
-    sideViewWidth = size.x - viewPadding * 2 - gameViewWidth;
+    gameStatusBarHeight = Block.gridSize * 2; //游戏状态栏高度，设定为2个格子高度
+    gameViewportWidth = size.x - viewPadding * 2;
+    gameViewportHeight = size.y - viewPadding * 2 - gameStatusBarHeight;
+    sideViewportWidth = gameViewportWidth * 0.3;
+    gameViewportWidth = gameViewportWidth - sideViewportWidth;
+    cellRowCount = (gameViewportHeight / Block.gridSize).round();
+    cellColumnCount = (gameViewportWidth / Block.gridSize).round();
+    gameViewportWidth = (cellColumnCount * Block.gridSize).toDouble();
+    sideViewportWidth = size.x - viewPadding * 2 - gameViewportWidth;
     tetrisCells = List.generate(
       cellRowCount,
       (_) => List.filled(cellColumnCount, null),
@@ -57,7 +64,18 @@ class GameScreenViewComponent extends PositionComponent
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    debugPrint('$size');
+    drawGameScreenBackground(canvas); //绘制游戏背景色
+    drawGameAllCellBlocks(canvas); //绘制游戏屏幕中的所有格子
+    // var paragraph = ParagraphBuilder(
+    //   ParagraphStyle(fontStyle: FontStyle.normal, fontSize: 16),
+    // );
+    // // paragraph.pushStyle(TextSTyle(color: Colors.white));
+    // paragraph.addText("Hello world");
+    // canvas.drawParagraph(paragraph.build(), Offset(100, 100));
+  }
+
+  /// 绘制游戏屏幕背景
+  void drawGameScreenBackground(Canvas canvas) {
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(0, 0, size.x, size.y),
@@ -65,6 +83,24 @@ class GameScreenViewComponent extends PositionComponent
       ),
       Paint()..color = const Color(0xFF6E5D51),
     );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          viewPadding - 2,
+          viewPadding - 2 + gameStatusBarHeight,
+          cellColumnCount * Block.gridSize + 4,
+          cellRowCount * Block.gridSize + 4,
+        ),
+        Radius.circular(3),
+      ),
+      Paint()
+        ..color = Colors.black87
+        ..style = PaintingStyle.stroke,
+    );
+  }
+
+  /// 绘制游戏屏幕中的所有格子
+  void drawGameAllCellBlocks(Canvas canvas) {
     for (var y = 0; y < tetrisCells.length; y++) {
       for (var x = 0; x < tetrisCells[y].length; x++) {
         Block.drawCell(
@@ -75,26 +111,12 @@ class GameScreenViewComponent extends PositionComponent
           borderRadius: 1,
           offset: Offset(
             viewPadding / Block.gridSize,
-            viewPadding / Block.gridSize,
+            (gameStatusBarHeight + viewPadding) / Block.gridSize,
           ),
           renderColor: tetrisCells[y][x] ?? Block.defaultRenderColor,
         );
       }
     }
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          viewPadding - 2,
-          viewPadding - 2,
-          cellColumnCount * Block.gridSize + 4,
-          cellRowCount * Block.gridSize + 4,
-        ),
-        Radius.circular(3),
-      ),
-      Paint()
-        ..color = Colors.black87
-        ..style = PaintingStyle.stroke,
-    );
   }
 
   /// 碰撞检测2

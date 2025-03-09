@@ -1,8 +1,9 @@
 import 'dart:ui' show Image;
 
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' hide Block;
 import 'package:flame/flame.dart';
 import 'package:flutter/rendering.dart';
+import 'package:tetris/block/block.dart';
 import 'package:tetris/platform/mobile/button/big_button_component.dart';
 import 'package:tetris/platform/mobile/button/direction_button_component.dart';
 import 'package:tetris/platform/mobile/button/game_button_type.dart';
@@ -39,10 +40,6 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
 
   /// 游戏屏幕加载完成事件
   void Function()? onGameScreenLoaded;
-
-  /// 添加组件到游戏屏幕
-  void addToGameScreen(Component component) =>
-      gameScreenViewComponent.add(component);
 
   @override
   Future<void> onLoad() async {
@@ -183,6 +180,10 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
     ); // 添加关机按钮
   }
 
+  /// 添加组件到游戏屏幕
+  void addToGameScreen(Component component) =>
+      gameScreenViewComponent.add(component);
+
   /// 设置预测的下一个方块
   set expectNextBlockShape(List<int> value) {
     gameScreenViewComponent.expectNextBlockShape = value;
@@ -201,8 +202,14 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
   Color get expectNextBlockColor =>
       gameScreenViewComponent.expectNextBlockColor;
 
+  /// 合并方块到游戏面板数据中
+  void mergeBlock(Block block) => gameScreenViewComponent.mergeBlock(block);
+
   /// 清空所有数据行
   void clear() => gameScreenViewComponent.clear();
+
+  /// 判断方块是否碰撞
+  bool isCollision(Block block) => gameScreenViewComponent.isCollision(block);
 
   @override
   void render(Canvas canvas) {

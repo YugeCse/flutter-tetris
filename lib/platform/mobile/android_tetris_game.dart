@@ -44,7 +44,7 @@ class AndroidTetrisGame extends FlameGame {
   int timeMillis = 0;
 
   /// 是否允许运行
-  bool allowRun = true;
+  bool _isAllowGameRun = true;
 
   /// 游戏面板对象
   AndroidBoardComponent? _board;
@@ -55,36 +55,61 @@ class AndroidTetrisGame extends FlameGame {
   /// 下一个方块
   Block? _nextBlock;
 
+  /// 游戏是否结束
+  bool _isGameOver = false;
+
   @override
   FutureOr<void> onLoad() async {
     add(_board = AndroidBoardComponent()..onGameButtonClick = gameButtonClick);
     _board?.onGameScreenLoaded = () {
       var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
-      _board?.addToGameScreen(_curBlock = Block.generate(gridCols: gridCols));
-      _nextBlock = Block.generate(gridCols: gridCols); //生成下一个方块
+      _board?.addToGameScreen(
+        _curBlock = Block.generate(
+          gridCols: gridCols,
+          startOffset: Vector2(
+            0,
+            _board!.gameScreenViewComponent.gameStatusBarHeight,
+          ),
+        ),
+      );
+      _nextBlock = Block.generate(
+        gridCols: gridCols,
+        startOffset: Vector2(
+          0,
+          _board!.gameScreenViewComponent.gameStatusBarHeight,
+        ),
+      ); //生成下一个方块
       _board?.expectNextBlockShape = _nextBlock!.shape;
       _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
     };
   }
 
-  /// 暂停Game
-  void pause() {
-    allowRun = false; //暂停Game
-  }
-
   /// 重新开始
-  void restart() {
+  void restartGame() {
     // _gameOverScene?.removeFromParent();
-    _board?.clear();
     if (_curBlock != null) {
       _curBlock?.removeFromParent();
     }
+    _board?.clear(); //清空游戏面板
     gameLevel = 1; //重置游戏等级
     fallDownSpeed = 1.0; //重置下落速度
-    allowRun = true; //允许Game继续运行
+    _isGameOver = false;
+    _isAllowGameRun = true; //允许Game继续运行
+    var blockStartOffset = Vector2(
+      0,
+      _board!.gameScreenViewComponent.gameStatusBarHeight,
+    );
     var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
-    _board?.add(_curBlock = Block.generate(gridCols: gridCols));
-    _nextBlock = Block.generate(gridCols: gridCols); //生成下一个方块
+    _board?.addToGameScreen(
+      _curBlock = Block.generate(
+        gridCols: gridCols,
+        startOffset: blockStartOffset,
+      ),
+    );
+    _nextBlock = Block.generate(
+      gridCols: gridCols,
+      startOffset: blockStartOffset,
+    ); //生成下一个方块
     _board?.expectNextBlockShape = _nextBlock!.shape;
     _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
   }
@@ -100,7 +125,11 @@ class AndroidTetrisGame extends FlameGame {
     } else if (type == GameButtonType.down) {
       _curBlock?.moveDown(_board!.gameScreenViewComponent);
     } else if (type == GameButtonType.playOrPause) {
-      allowRun = !allowRun; //游戏开始和暂停
+      if (_isGameOver) {
+        restartGame(); //重新开始游戏
+      } else {
+        _isAllowGameRun = !_isAllowGameRun; //游戏开始和暂停
+      }
     } else if (type == GameButtonType.soundEffect) {
       Sound.isSoundEffectEnabled = !Sound.isSoundEffectEnabled;
     } else if (type == GameButtonType.bgMusic) {
@@ -113,28 +142,37 @@ class AndroidTetrisGame extends FlameGame {
     super.update(dt);
     var curMillis = DateTime.now().millisecondsSinceEpoch;
     var diffMillis = curMillis - timeMillis;
-    if (!allowRun ||
+    if (!_isAllowGameRun ||
+        _isGameOver ||
         diffMillis < fallDownSpeed * 1000 ||
         !_board!.isGameScreenViewLoaded) {
       return;
     }
-    timeMillis = curMillis;
+    timeMillis = curMillis; //更新时间数据
     if (_curBlock?.moveDown(_board!.gameScreenViewComponent) == false) {
-      _board?.gameScreenViewComponent.mergeBlock(_curBlock!);
+      _board?.mergeBlock(_curBlock!);
       updateLevelByScore(); //根据分数更新等级
-      _curBlock?.removeFromParent();
-      _board?.addToGameScreen(_curBlock = _nextBlock!);
-      if (_board?.gameScreenViewComponent.isCollision(_curBlock!) == true) {
-        allowRun = false;
-        debugPrint('Game Over');
+      _curBlock?.removeFromParent(); //移除当前方块
+      _board?.addToGameScreen(_curBlock = _nextBlock!); //将下一个方块添加到游戏屏幕
+      if (_board?.isCollision(_curBlock!) == true) {
         Sound.playGameOverSound(); //播放游戏结束音效
+        debugPrint('Game Over');
+        _isGameOver = true; //标记游戏结束
+        _isAllowGameRun = false; //不允许Game继续运行
         // add(_gameOverScene = WebGameOverScene()..onRestartGame = restart);
         return;
       }
       var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
-      _nextBlock = Block.generate(gridCols: gridCols);
-      _board?.expectNextBlockShape = _nextBlock!.shape;
-      _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
+      _nextBlock = Block.generate(
+        gridCols: gridCols,
+        startOffset: Vector2(
+          0,
+          _board!.gameScreenViewComponent.gameStatusBarHeight,
+        ),
+      );
+      _board
+        ?..expectNextBlockShape = _nextBlock!.shape
+        ..expectNextBlockColor = _nextBlock!.tetrisColor;
     }
   }
 

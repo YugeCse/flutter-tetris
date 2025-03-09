@@ -127,9 +127,9 @@ abstract class Block extends PositionComponent {
 
   /// 绘制单元格
   /// - canvas: 画布
-  /// - x, y: 单元格坐标
+  /// - x, y: 单元格坐标，为单元格坐标非实际像素坐标
   /// - renderColor: 单元格颜色
-  /// - startX, startY: 绘制起始坐标
+  /// - startX, startY: 绘制起始坐标，为单元格坐标非实际像素坐标
   static void drawCell(
     Canvas canvas,
     OffsetInt coordinate, {
@@ -202,7 +202,7 @@ abstract class Block extends PositionComponent {
   }
 
   /// 生成不同的方块内容
-  static Block generate({required int gridCols}) {
+  static Block generate({required int gridCols, Vector2? startOffset}) {
     var seed = DateTime.now().millisecondsSinceEpoch;
     final blockFactories = [
       () => LBlock(),
@@ -218,6 +218,10 @@ abstract class Block extends PositionComponent {
     var currentBlockShape = currentBlock.shape;
     var (mxCols, _) = Utils.computeShpaeFillMaxNum(currentBlockShape);
     int xCoordinate = ((gridCols - mxCols) / 2).floor();
-    return currentBlock..position = Vector2(xCoordinate * Block.gridSize, 0);
+    var position = Vector2(
+      xCoordinate * Block.gridSize + (startOffset?.x ?? 0),
+      startOffset?.y ?? 0,
+    );
+    return currentBlock..position = position;
   }
 }
