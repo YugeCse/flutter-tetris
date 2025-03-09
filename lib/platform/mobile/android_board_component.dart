@@ -6,7 +6,8 @@ import 'package:flutter/rendering.dart';
 import 'package:tetris/platform/mobile/button/big_button_component.dart';
 import 'package:tetris/platform/mobile/button/direction_button_component.dart';
 import 'package:tetris/platform/mobile/button/game_button_type.dart';
-import 'package:tetris/platform/mobile/game_digital_component.dart';
+import 'package:tetris/platform/mobile/button/system_button_component.dart';
+import 'package:tetris/platform/mobile/game_screen_view_component.dart';
 
 /// Android游戏面板, 背景尺寸：872x1600
 class AndroidBoardComponent extends PositionComponent with HasGameRef {
@@ -27,18 +28,21 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
 
   double _gameBoyFooterOriginHeight = 0;
 
-  bool isGameDiaitalComponentInitilized = false;
-
-  late GameDigitalComponent _gameDigitalComponent;
-
-  GameDigitalComponent get gameDigitalComponent => _gameDigitalComponent;
-
-  void Function()? onGameDiagitalComponentInitilized;
-
+  /// 游戏按键点击事件
   void Function(GameButtonType)? onGameButtonClick;
 
-  void addToGameDigitalComponent(Component component) =>
-      gameDigitalComponent.add(component);
+  /// 游戏屏幕是否加载
+  bool isGameScreenViewLoaded = false;
+
+  /// 游戏屏幕组件
+  late GameScreenViewComponent gameScreenViewComponent;
+
+  /// 游戏屏幕加载完成事件
+  void Function()? onGameScreenLoaded;
+
+  /// 添加组件到游戏屏幕
+  void addToGameScreen(Component component) =>
+      gameScreenViewComponent.add(component);
 
   @override
   Future<void> onLoad() async {
@@ -53,7 +57,7 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
     var bottomMargin = _gameBoyOriginSize.y * 0.53 * _gameBoyImgScale;
     var horizontalMargin = (_gameBoyOriginSize.x * 0.185) * _gameBoyImgScale;
     add(
-      _gameDigitalComponent = GameDigitalComponent(
+      gameScreenViewComponent = GameScreenViewComponent(
         size: Vector2(
           gameRef.size.x - horizontalMargin * 2,
           gameRef.size.y - topMargin - bottomMargin,
@@ -61,12 +65,12 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
         position: Vector2(horizontalMargin, topMargin),
       ),
     );
-    isGameDiaitalComponentInitilized = true;
-    onGameDiagitalComponentInitilized?.call(); //通知初始化完成
+    isGameScreenViewLoaded = true;
+    onGameScreenLoaded?.call(); //通知初始化完成
     var directionButtonSize = Vector2(
       88 * _gameBoyImgScale,
       88 * _gameBoyImgScale,
-    );
+    ); //方向控制按钮的大小
     add(
       DirectionButtonComponent()
         ..onTapClick = () {
@@ -121,33 +125,84 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
           onGameButtonClick?.call(GameButtonType.send);
         }
         ..position = Vector2(
-          (_gameBoyOriginSize.x * 0.695) * _gameBoyImgScale,
-          gameRef.size.y - _gameBoyOriginSize.y * 0.326 * _gameBoyImgScale,
+          (_gameBoyOriginSize.x * 0.6945) * _gameBoyImgScale,
+          gameRef.size.y - _gameBoyOriginSize.y * 0.325 * _gameBoyImgScale,
         )
         ..size = Vector2(140 * _gameBoyImgScale, 140 * _gameBoyImgScale)
         ..debugMode = true,
     ); //添加大按钮
+    // 添加系统按钮组: 开始/暂停/重置, 音效, 背景音乐, 关机
+    var sysButtonSize = Vector2(60 * _gameBoyImgScale, 60 * _gameBoyImgScale);
+    add(
+      SystemButtonComponent()
+        ..onTapClick = () {
+          onGameButtonClick?.call(GameButtonType.playOrPause);
+        }
+        ..debugMode = true
+        ..size = sysButtonSize
+        ..position = Vector2(
+          _gameBoyOriginSize.x * 0.232 * _gameBoyImgScale,
+          gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
+        ),
+    ); // 添加开始/暂停/重置按钮
+    add(
+      SystemButtonComponent()
+        ..onTapClick = () {
+          onGameButtonClick?.call(GameButtonType.soundEffect);
+        }
+        ..debugMode = true
+        ..size = sysButtonSize
+        ..position = Vector2(
+          _gameBoyOriginSize.x * 0.385 * _gameBoyImgScale,
+          gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
+        ),
+    ); // 添加音效按钮
+    add(
+      SystemButtonComponent()
+        ..onTapClick = () {
+          onGameButtonClick?.call(GameButtonType.bgMusic);
+        }
+        ..debugMode = true
+        ..size = sysButtonSize
+        ..position = Vector2(
+          _gameBoyOriginSize.x * 0.5412 * _gameBoyImgScale,
+          gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
+        ),
+    ); // 添加背景音乐按钮
+    add(
+      SystemButtonComponent()
+        ..onTapClick = () {
+          onGameButtonClick?.call(GameButtonType.shutdown);
+        }
+        ..debugMode = true
+        ..size = sysButtonSize
+        ..position = Vector2(
+          _gameBoyOriginSize.x * 0.6953 * _gameBoyImgScale,
+          gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
+        ),
+    ); // 添加关机按钮
   }
 
   /// 设置预测的下一个方块
   set expectNextBlockShape(List<int> value) {
-    _gameDigitalComponent.expectNextBlockShape = value;
+    gameScreenViewComponent.expectNextBlockShape = value;
   }
 
   /// 获取预测的下一个方块
   List<int> get expectNextBlockShape =>
-      _gameDigitalComponent.expectNextBlockShape;
+      gameScreenViewComponent.expectNextBlockShape;
 
   /// 设置预测的下一个方块的颜色
   set expectNextBlockColor(Color value) {
-    _gameDigitalComponent.expectNextBlockColor = value;
+    gameScreenViewComponent.expectNextBlockColor = value;
   }
 
   /// 获取预测的下一个方块的颜色
-  Color get expectNextBlockColor => _gameDigitalComponent.expectNextBlockColor;
+  Color get expectNextBlockColor =>
+      gameScreenViewComponent.expectNextBlockColor;
 
   /// 清空所有数据行
-  void clear() => _gameDigitalComponent.clear();
+  void clear() => gameScreenViewComponent.clear();
 
   @override
   void render(Canvas canvas) {

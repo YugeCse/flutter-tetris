@@ -58,11 +58,9 @@ class AndroidTetrisGame extends FlameGame {
   @override
   FutureOr<void> onLoad() async {
     add(_board = AndroidBoardComponent()..onGameButtonClick = gameButtonClick);
-    _board?.onGameDiagitalComponentInitilized = () {
-      var gridCols = _board!.gameDigitalComponent.cellColumnCount;
-      _board?.addToGameDigitalComponent(
-        _curBlock = Block.generate(gridCols: gridCols),
-      );
+    _board?.onGameScreenLoaded = () {
+      var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
+      _board?.addToGameScreen(_curBlock = Block.generate(gridCols: gridCols));
       _nextBlock = Block.generate(gridCols: gridCols); //生成下一个方块
       _board?.expectNextBlockShape = _nextBlock!.shape;
       _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
@@ -84,7 +82,7 @@ class AndroidTetrisGame extends FlameGame {
     gameLevel = 1; //重置游戏等级
     fallDownSpeed = 1.0; //重置下落速度
     allowRun = true; //允许Game继续运行
-    var gridCols = _board!.gameDigitalComponent.cellColumnCount;
+    var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
     _board?.add(_curBlock = Block.generate(gridCols: gridCols));
     _nextBlock = Block.generate(gridCols: gridCols); //生成下一个方块
     _board?.expectNextBlockShape = _nextBlock!.shape;
@@ -94,14 +92,20 @@ class AndroidTetrisGame extends FlameGame {
   /// 游戏按钮点击事件
   void gameButtonClick(GameButtonType type) {
     if (type == GameButtonType.up || type == GameButtonType.send) {
-      _curBlock?.rotate(_board!.gameDigitalComponent);
+      _curBlock?.rotate(_board!.gameScreenViewComponent);
     } else if (type == GameButtonType.left) {
-      _curBlock?.moveLeft(_board!.gameDigitalComponent);
+      _curBlock?.moveLeft(_board!.gameScreenViewComponent);
     } else if (type == GameButtonType.right) {
-      _curBlock?.moveRight(_board!.gameDigitalComponent);
+      _curBlock?.moveRight(_board!.gameScreenViewComponent);
     } else if (type == GameButtonType.down) {
-      _curBlock?.moveDown(_board!.gameDigitalComponent);
-    }
+      _curBlock?.moveDown(_board!.gameScreenViewComponent);
+    } else if (type == GameButtonType.playOrPause) {
+      allowRun = !allowRun; //游戏开始和暂停
+    } else if (type == GameButtonType.soundEffect) {
+      Sound.isSoundEffectEnabled = !Sound.isSoundEffectEnabled;
+    } else if (type == GameButtonType.bgMusic) {
+      Sound.isBgMusicEnabled = !Sound.isBgMusicEnabled;
+    } else if (type == GameButtonType.shutdown) {}
   }
 
   @override
@@ -111,23 +115,23 @@ class AndroidTetrisGame extends FlameGame {
     var diffMillis = curMillis - timeMillis;
     if (!allowRun ||
         diffMillis < fallDownSpeed * 1000 ||
-        !_board!.isGameDiaitalComponentInitilized) {
+        !_board!.isGameScreenViewLoaded) {
       return;
     }
     timeMillis = curMillis;
-    if (_curBlock?.moveDown(_board!.gameDigitalComponent) == false) {
-      _board?.gameDigitalComponent.mergeBlock(_curBlock!);
+    if (_curBlock?.moveDown(_board!.gameScreenViewComponent) == false) {
+      _board?.gameScreenViewComponent.mergeBlock(_curBlock!);
       updateLevelByScore(); //根据分数更新等级
       _curBlock?.removeFromParent();
-      _board?.addToGameDigitalComponent(_curBlock = _nextBlock!);
-      if (_board?.gameDigitalComponent.isCollision(_curBlock!) == true) {
+      _board?.addToGameScreen(_curBlock = _nextBlock!);
+      if (_board?.gameScreenViewComponent.isCollision(_curBlock!) == true) {
         allowRun = false;
         debugPrint('Game Over');
         Sound.playGameOverSound(); //播放游戏结束音效
         // add(_gameOverScene = WebGameOverScene()..onRestartGame = restart);
         return;
       }
-      var gridCols = _board!.gameDigitalComponent.cellColumnCount;
+      var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
       _nextBlock = Block.generate(gridCols: gridCols);
       _board?.expectNextBlockShape = _nextBlock!.shape;
       _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
@@ -142,11 +146,11 @@ class AndroidTetrisGame extends FlameGame {
       var levelInfo = gameLevels[i];
       if (levelInfo.level == gameLevel) continue;
       if (levelInfo.level != gameLevel &&
-          _board!.gameDigitalComponent.scoreNumber >= levelInfo.minScore &&
-          _board!.gameDigitalComponent.scoreNumber <= levelInfo.maxScore) {
+          _board!.gameScreenViewComponent.scoreNumber >= levelInfo.minScore &&
+          _board!.gameScreenViewComponent.scoreNumber <= levelInfo.maxScore) {
         gameLevel = levelInfo.level;
         fallDownSpeed = levelInfo.speed;
-        _board?.gameDigitalComponent.levelNumber = gameLevel;
+        _board?.gameScreenViewComponent.levelNumber = gameLevel;
       }
     }
     debugPrint('Level Up: $gameLevel, Game Speed: $fallDownSpeed');

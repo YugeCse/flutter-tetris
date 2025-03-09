@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/components.dart' hide Block;
+import 'package:flame/extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tetris/data/offset_int.dart';
@@ -12,7 +13,7 @@ import 'package:tetris/block/t_block.dart';
 import 'package:tetris/block/z2_block.dart';
 import 'package:tetris/block/z_block.dart';
 import 'package:tetris/platform/game_collision_detector.dart';
-import 'package:tetris/platform/mobile/game_digital_component.dart';
+import 'package:tetris/platform/mobile/game_screen_view_component.dart';
 import 'package:tetris/utils/utils.dart';
 
 /// 所有Block的基类
@@ -46,7 +47,7 @@ abstract class Block extends PositionComponent {
           Colors.blue,
           Colors.green,
           Colors.yellow,
-          Colors.purple,
+          Colors.blueAccent,
         ][Random().nextInt(5)];
     size = Vector2(gridSize * maxGridCols, gridSize * maxGridRows);
   }
@@ -102,12 +103,12 @@ abstract class Block extends PositionComponent {
               canvas,
               OffsetInt(dx: x, dy: y),
               renderColor: tetrisColor,
-              strokeWidth: 1,
+              strokeWidth: 1.2,
               innerPadding: 0.2,
               borderRadius: 1,
               offset: Offset(
-                GameDigitalComponent.viewPadding / Block.gridSize,
-                GameDigitalComponent.viewPadding / Block.gridSize,
+                GameScreenViewComponent.viewPadding / Block.gridSize,
+                GameScreenViewComponent.viewPadding / Block.gridSize,
               ),
             );
           }
@@ -121,7 +122,7 @@ abstract class Block extends PositionComponent {
     if (kIsWeb) {
       return Color.fromARGB(255, 34, 34, 34);
     }
-    return Color.fromARGB(255, 61, 61, 61).withAlpha(100);
+    return Color.fromARGB(255, 78, 78, 78).withAlpha(80);
   }
 
   /// 绘制单元格
@@ -153,15 +154,51 @@ abstract class Block extends PositionComponent {
         ..style = PaintingStyle.stroke
         ..color = renderColor ?? defaultRenderColor,
     );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        rect.deflate(Block.gridSize / 4.2).outerRect,
-        Radius.circular(borderRadius),
-      ),
-      paint
-        ..style = PaintingStyle.fill
-        ..color = renderColor ?? defaultRenderColor,
-    );
+    var centerRect = rect.deflate(Block.gridSize / 4.2).outerRect;
+    if (kIsWeb) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(centerRect, Radius.circular(borderRadius)),
+        paint
+          ..style = PaintingStyle.fill
+          ..color = renderColor ?? defaultRenderColor,
+      );
+    } else {
+      _drawHeartIcon(
+        canvas,
+        centerRect.center.toVector2(),
+        renderColor ?? defaultRenderColor,
+      );
+    }
+  }
+
+  /// 绘制桃心
+  static void _drawHeartIcon(
+    Canvas canvas,
+    Vector2 position,
+    Color renderColor,
+  ) {
+    final Paint paint =
+        Paint()
+          ..color = renderColor
+          ..style = PaintingStyle.fill;
+    final double scale = 0.245; // 缩放比例
+    final double offsetX = position.x; // 水平居中
+    final double offsetY = position.y; // 垂直居中
+    final Path path = Path();
+    for (double t = 0; t <= 2 * 3.141592653589793; t += 0.01) {
+      final double x = 16.0 * pow(sin(t), 3);
+      final double y =
+          13 * cos(t) - 5 * cos(2 * t) - 2 * cos(3 * t) - cos(4 * t);
+      final double scaledX = x * scale + offsetX;
+      final double scaledY = -y * scale + offsetY; // 反转 y 轴以适配屏幕坐标系
+      if (t == 0) {
+        path.moveTo(scaledX, scaledY);
+      } else {
+        path.lineTo(scaledX, scaledY);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
   }
 
   /// 生成不同的方块内容

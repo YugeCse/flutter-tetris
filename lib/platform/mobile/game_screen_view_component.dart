@@ -7,7 +7,7 @@ import 'package:tetris/utils/collision.dart' show Collision;
 import 'package:tetris/utils/sound.dart';
 
 /// 游戏显示组件
-class GameDigitalComponent extends PositionComponent
+class GameScreenViewComponent extends PositionComponent
     with GameCollisionDetector {
   /// 游戏视图Padding宽度
   static final double viewPadding = 8;
@@ -39,7 +39,7 @@ class GameDigitalComponent extends PositionComponent
   /// 当前等级数字
   int levelNumber = 1;
 
-  GameDigitalComponent({super.size, super.position}) {
+  GameScreenViewComponent({super.size, super.position}) {
     gameViewWidth = size.x - viewPadding * 2;
     gameViewHeight = size.y - viewPadding * 2;
     sideViewWidth = gameViewWidth * 0.3;
@@ -70,7 +70,7 @@ class GameDigitalComponent extends PositionComponent
         Block.drawCell(
           canvas,
           OffsetInt(dx: x, dy: y),
-          strokeWidth: 1,
+          strokeWidth: 1.2,
           innerPadding: 0.2,
           borderRadius: 1,
           offset: Offset(
@@ -81,6 +81,20 @@ class GameDigitalComponent extends PositionComponent
         );
       }
     }
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          viewPadding - 2,
+          viewPadding - 2,
+          cellColumnCount * Block.gridSize + 4,
+          cellRowCount * Block.gridSize + 4,
+        ),
+        Radius.circular(3),
+      ),
+      Paint()
+        ..color = Colors.black87
+        ..style = PaintingStyle.stroke,
+    );
   }
 
   /// 碰撞检测2

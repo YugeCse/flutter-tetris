@@ -7,7 +7,6 @@ import 'package:tetris/utils/sound.dart';
 
 /// This component is used to control the background music.
 class WebSoundComponent extends PositionComponent with TapCallbacks {
-  bool isSoundOpen = false;
   Svg? soundOpenSvg;
   Svg? soundSilentSvg;
   SvgComponent? soundSvgComponent;
@@ -20,7 +19,7 @@ class WebSoundComponent extends PositionComponent with TapCallbacks {
     add(titleComponent);
     add(
       soundSvgComponent = SvgComponent(
-        svg: soundSilentSvg,
+        svg: Sound.isBgMusicEnabled ? soundOpenSvg : soundSilentSvg,
         size: Vector2(30, 30),
         position: Vector2(titleComponent.size.x + 12, 0),
       ),
@@ -31,12 +30,8 @@ class WebSoundComponent extends PositionComponent with TapCallbacks {
   @override
   void onTapDown(TapDownEvent event) async {
     super.onTapDown(event);
-    isSoundOpen = !isSoundOpen;
-    if (isSoundOpen) {
-      Sound.playBgMusic();
-    } else {
-      Sound.stopBgMusic();
-    }
-    soundSvgComponent?.svg = isSoundOpen ? soundOpenSvg : soundSilentSvg;
+    Sound.isBgMusicEnabled = !Sound.isBgMusicEnabled;
+    soundSvgComponent?.svg =
+        Sound.isBgMusicEnabled ? soundOpenSvg : soundSilentSvg;
   }
 }
