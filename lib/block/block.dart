@@ -14,7 +14,7 @@ import 'package:tetris/block/z2_block.dart';
 import 'package:tetris/block/z_block.dart';
 import 'package:tetris/platform/game_collision_detector.dart';
 import 'package:tetris/platform/mobile/game_screen_view_component.dart';
-import 'package:tetris/utils/utils.dart';
+import 'package:tetris/utils/shape_utils.dart';
 
 /// 所有Block的基类
 abstract class Block extends PositionComponent {
@@ -216,7 +216,7 @@ abstract class Block extends PositionComponent {
     var rand = Random(seed).nextInt(blockFactories.length);
     var currentBlock = blockFactories[rand]();
     var currentBlockShape = currentBlock.shape;
-    var (mxCols, _) = Utils.computeShpaeFillMaxNum(currentBlockShape);
+    var (mxCols, _) = ShapeUtils.computeShpaeFillMaxNum(currentBlockShape);
     int xCoordinate = ((gridCols - mxCols) / 2).floor();
     var position = Vector2(
       xCoordinate * Block.gridSize + (startOffset?.x ?? 0),

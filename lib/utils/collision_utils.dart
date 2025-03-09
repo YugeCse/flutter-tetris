@@ -3,8 +3,8 @@ import 'dart:ui' show Color;
 import 'package:tetris/block/block.dart';
 
 /// 碰撞检测类
-class Collision {
-  Collision._();
+class CollisionUtils {
+  CollisionUtils._();
 
   /// 检测碰撞，与边缘碰撞或者已经填充的方块碰撞
   static bool isCollision(

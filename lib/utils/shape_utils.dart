@@ -1,8 +1,8 @@
 import 'package:tetris/block/block.dart';
 
-/// 工具类
-class Utils {
-  Utils._();
+/// 形状处理工具类
+class ShapeUtils {
+  ShapeUtils._();
 
   // 计算形状的填充最大值
   static (int, int) computeShpaeFillMaxNum(List<int> shape) {

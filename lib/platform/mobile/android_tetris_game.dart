@@ -6,7 +6,7 @@ import 'package:tetris/block/block.dart';
 import 'package:tetris/data/level_info.dart';
 import 'package:tetris/platform/mobile/android_board_component.dart';
 import 'package:tetris/platform/mobile/button/game_button_type.dart';
-import 'package:tetris/utils/sound.dart';
+import 'package:tetris/utils/sound_utils.dart';
 
 /// 安卓俄罗斯方块游戏类
 class AndroidTetrisGame extends FlameGame {
@@ -131,9 +131,9 @@ class AndroidTetrisGame extends FlameGame {
         _isAllowGameRun = !_isAllowGameRun; //游戏开始和暂停
       }
     } else if (type == GameButtonType.soundEffect) {
-      Sound.isSoundEffectEnabled = !Sound.isSoundEffectEnabled;
+      SoundUtils.isSoundEffectEnabled = !SoundUtils.isSoundEffectEnabled;
     } else if (type == GameButtonType.bgMusic) {
-      Sound.isBgMusicEnabled = !Sound.isBgMusicEnabled;
+      SoundUtils.isBgMusicEnabled = !SoundUtils.isBgMusicEnabled;
     } else if (type == GameButtonType.shutdown) {}
   }
 
@@ -142,38 +142,39 @@ class AndroidTetrisGame extends FlameGame {
     super.update(dt);
     var curMillis = DateTime.now().millisecondsSinceEpoch;
     var diffMillis = curMillis - timeMillis;
-    if (!_isAllowGameRun ||
+    if (!_board!.isGameScreenViewLoaded ||
+        !_isAllowGameRun ||
         _isGameOver ||
-        diffMillis < fallDownSpeed * 1000 ||
-        !_board!.isGameScreenViewLoaded) {
+        diffMillis < fallDownSpeed * 1000) {
       return;
     }
     timeMillis = curMillis; //更新时间数据
-    if (_curBlock?.moveDown(_board!.gameScreenViewComponent) == false) {
-      _board?.mergeBlock(_curBlock!);
-      updateLevelByScore(); //根据分数更新等级
-      _curBlock?.removeFromParent(); //移除当前方块
-      _board?.addToGameScreen(_curBlock = _nextBlock!); //将下一个方块添加到游戏屏幕
-      if (_board?.isCollision(_curBlock!) == true) {
-        Sound.playGameOverSound(); //播放游戏结束音效
-        debugPrint('Game Over');
-        _isGameOver = true; //标记游戏结束
-        _isAllowGameRun = false; //不允许Game继续运行
-        // add(_gameOverScene = WebGameOverScene()..onRestartGame = restart);
-        return;
-      }
-      var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
-      _nextBlock = Block.generate(
-        gridCols: gridCols,
-        startOffset: Vector2(
-          0,
-          _board!.gameScreenViewComponent.gameStatusBarHeight,
-        ),
-      );
-      _board
-        ?..expectNextBlockShape = _nextBlock!.shape
-        ..expectNextBlockColor = _nextBlock!.tetrisColor;
+    if (_curBlock?.moveDown(_board!.gameScreenViewComponent) == true) {
+      debugPrint('方块正在下落...');
+      return; //如果方块可以继续下落
     }
+    _board?.mergeBlock(_curBlock!);
+    updateLevelByScore(); //根据分数更新等级
+    _curBlock?.removeFromParent(); //移除当前方块
+    _board?.addToGameScreen(_curBlock = _nextBlock!); //将下一个方块添加到游戏屏幕
+    if (_board?.isCollision(_curBlock!) == true) {
+      SoundUtils.playGameOverSound(); //播放游戏结束音效
+      _board?.mergeBlock(_curBlock!); //游戏结束了还是要merge这个方块
+      _isGameOver = true; //标记游戏结束
+      _isAllowGameRun = false; //不允许Game继续运行
+      // add(_gameOverScene = WebGameOverScene()..onRestartGame = restart);
+    }
+    var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
+    _nextBlock = Block.generate(
+      gridCols: gridCols,
+      startOffset: Vector2(
+        0,
+        _board!.gameScreenViewComponent.gameStatusBarHeight,
+      ),
+    );
+    _board
+      ?..expectNextBlockShape = _nextBlock!.shape
+      ..expectNextBlockColor = _nextBlock!.tetrisColor;
   }
 
   /// 根据分数更新等级

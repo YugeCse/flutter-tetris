@@ -6,10 +6,10 @@ import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
 import 'package:tetris/data/offset_int.dart';
 import 'package:tetris/platform/game_collision_detector.dart';
-import 'package:tetris/utils/collision.dart';
-import 'package:tetris/utils/sound.dart';
+import 'package:tetris/utils/collision_utils.dart';
+import 'package:tetris/utils/sound_utils.dart';
 import 'package:tetris/block/block.dart';
-import 'package:tetris/utils/utils.dart';
+import 'package:tetris/utils/shape_utils.dart';
 import 'package:tetris/platform/web/web_sound_component.dart';
 
 /// 游戏面板类
@@ -106,7 +106,7 @@ class WebBoardComponent extends PositionComponent with GameCollisionDetector {
     );
     add(
       SpriteComponent.fromImage(
-        await Flame.images.load('tetris-city.jpg'),
+        await Flame.images.load('tetris_city_web.jpg'),
         srcSize: Vector2(1200, 834),
         scale: Vector2(
           (Block.maxGridCols * Block.gridSize) / 1200,
@@ -125,14 +125,14 @@ class WebBoardComponent extends PositionComponent with GameCollisionDetector {
   /// 检测碰撞，与边缘碰撞或者已经填充的方块碰撞
   @override
   bool isCollision(Block block) =>
-      Collision.isCollision(block, cells, boardRows, boardCols);
+      CollisionUtils.isCollision(block, cells, boardRows, boardCols);
 
   /// 碰撞检测2
   /// - xPosition, yPosition: 方块左上角坐标
   /// - shape: 方块形状
   @override
   bool isCollision2(double xPosition, double yPosition, List<int> shape) {
-    return Collision.isCollision2(
+    return CollisionUtils.isCollision2(
       cells,
       shape,
       xPosition,
@@ -171,7 +171,7 @@ class WebBoardComponent extends PositionComponent with GameCollisionDetector {
       }
     }
     if (clearLineCount > 0) {
-      Sound.playClearLinesSound(); //播放消除音效
+      SoundUtils.playClearLinesSound(); //播放消除音效
     }
   }
 
@@ -216,7 +216,7 @@ class WebBoardComponent extends PositionComponent with GameCollisionDetector {
   void drawNextBlockShape(Canvas canvas) {
     double startY = 1;
     double startX = WebBoardComponent.boardCols + 0.5;
-    var (maxX, maxY) = Utils.computeShpaeFillMaxNum(expectNextBlockShape);
+    var (maxX, maxY) = ShapeUtils.computeShpaeFillMaxNum(expectNextBlockShape);
     startX += (Block.maxGridCols - maxX) / 2;
     startY += (Block.maxGridRows - maxY) / 2;
     for (var y = 0; y < Block.maxGridRows; y++) {

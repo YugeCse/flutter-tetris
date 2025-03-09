@@ -206,7 +206,7 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
   void mergeBlock(Block block) => gameScreenViewComponent.mergeBlock(block);
 
   /// 清空所有数据行
-  void clear() => gameScreenViewComponent.clear();
+  void clear() => gameScreenViewComponent.resetData();
 
   /// 判断方块是否碰撞
   bool isCollision(Block block) => gameScreenViewComponent.isCollision(block);
