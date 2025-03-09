@@ -2,8 +2,10 @@ import 'dart:ui' show Image;
 
 import 'package:flame/components.dart' hide Block;
 import 'package:flame/flame.dart';
+import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/rendering.dart';
 import 'package:tetris/block/block.dart';
+import 'package:tetris/platform/mobile/android_tetris_game.dart';
 import 'package:tetris/platform/mobile/button/big_button_component.dart';
 import 'package:tetris/platform/mobile/button/direction_button_component.dart';
 import 'package:tetris/platform/mobile/button/game_button_type.dart';
@@ -11,7 +13,8 @@ import 'package:tetris/platform/mobile/button/system_button_component.dart';
 import 'package:tetris/platform/mobile/game_screen_view_component.dart';
 
 /// Android游戏面板, 背景尺寸：872x1600
-class AndroidBoardComponent extends PositionComponent with HasGameRef {
+class AndroidBoardComponent extends PositionComponent
+    with HasGameRef<AndroidTetrisGame> {
   /// 游戏面板尺寸
   static final _gameBoyOriginSize = Vector2(872, 1600);
 
@@ -73,60 +76,60 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.up);
         }
+        ..setColor(Colors.transparent)
         ..size = directionButtonSize
         ..position = Vector2(
           (_gameBoyOriginSize.x * 0.25) * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.366 * _gameBoyImgScale,
-        )
-        ..debugMode = true,
+        ),
     ); //添加上按钮
     add(
       DirectionButtonComponent()
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.down);
         }
+        ..setColor(Colors.transparent)
         ..size = directionButtonSize
         ..position = Vector2(
           (_gameBoyOriginSize.x * 0.25) * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.2552 * _gameBoyImgScale,
-        )
-        ..debugMode = true,
+        ),
     ); //添加下按钮
     add(
       DirectionButtonComponent()
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.left);
         }
+        ..setColor(Colors.transparent)
         ..size = directionButtonSize
         ..position = Vector2(
           (_gameBoyOriginSize.x * 0.1472) * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.3095 * _gameBoyImgScale,
-        )
-        ..debugMode = true,
+        ),
     ); //添加左按钮
     add(
       DirectionButtonComponent()
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.right);
         }
+        ..setColor(Colors.transparent)
         ..size = directionButtonSize
         ..position = Vector2(
           (_gameBoyOriginSize.x * 0.354) * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.3095 * _gameBoyImgScale,
-        )
-        ..debugMode = true,
+        ),
     ); //添加右按钮
     add(
       BigButtonComponent()
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.send);
         }
+        ..setColor(Colors.transparent)
         ..position = Vector2(
           (_gameBoyOriginSize.x * 0.6945) * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.325 * _gameBoyImgScale,
         )
-        ..size = Vector2(140 * _gameBoyImgScale, 140 * _gameBoyImgScale)
-        ..debugMode = true,
+        ..size = Vector2(140 * _gameBoyImgScale, 140 * _gameBoyImgScale),
     ); //添加大按钮
     // 添加系统按钮组: 开始/暂停/重置, 音效, 背景音乐, 关机
     var sysButtonSize = Vector2(60 * _gameBoyImgScale, 60 * _gameBoyImgScale);
@@ -135,8 +138,8 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.playOrPause);
         }
-        ..debugMode = true
         ..size = sysButtonSize
+        ..setColor(Colors.transparent)
         ..position = Vector2(
           _gameBoyOriginSize.x * 0.232 * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
@@ -147,8 +150,8 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.soundEffect);
         }
-        ..debugMode = true
         ..size = sysButtonSize
+        ..setColor(Colors.transparent)
         ..position = Vector2(
           _gameBoyOriginSize.x * 0.385 * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
@@ -159,8 +162,8 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.bgMusic);
         }
-        ..debugMode = true
         ..size = sysButtonSize
+        ..setColor(Colors.transparent)
         ..position = Vector2(
           _gameBoyOriginSize.x * 0.5412 * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
@@ -171,8 +174,8 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
         ..onTapClick = () {
           onGameButtonClick?.call(GameButtonType.shutdown);
         }
-        ..debugMode = true
         ..size = sysButtonSize
+        ..setColor(Colors.transparent)
         ..position = Vector2(
           _gameBoyOriginSize.x * 0.6953 * _gameBoyImgScale,
           gameRef.size.y - _gameBoyOriginSize.y * 0.460 * _gameBoyImgScale,
@@ -206,7 +209,7 @@ class AndroidBoardComponent extends PositionComponent with HasGameRef {
   void mergeBlock(Block block) => gameScreenViewComponent.mergeBlock(block);
 
   /// 清空所有数据行
-  void clear() => gameScreenViewComponent.resetData();
+  void resetData() => gameScreenViewComponent.resetData();
 
   /// 判断方块是否碰撞
   bool isCollision(Block block) => gameScreenViewComponent.isCollision(block);

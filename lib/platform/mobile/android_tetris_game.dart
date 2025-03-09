@@ -44,7 +44,7 @@ class AndroidTetrisGame extends FlameGame {
   int timeMillis = 0;
 
   /// 是否允许运行
-  bool _isAllowGameRun = true;
+  bool _isAllowGameRun = false;
 
   /// 游戏面板对象
   AndroidBoardComponent? _board;
@@ -58,30 +58,34 @@ class AndroidTetrisGame extends FlameGame {
   /// 游戏是否结束
   bool _isGameOver = false;
 
+  /// 游戏结束控制器
+  StreamController<int>? gameOverStreamController;
+
   @override
   FutureOr<void> onLoad() async {
+    gameOverStreamController = StreamController.broadcast(); //初始化游戏结束控制器
     add(_board = AndroidBoardComponent()..onGameButtonClick = gameButtonClick);
-    _board?.onGameScreenLoaded = () {
-      var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
-      _board?.addToGameScreen(
-        _curBlock = Block.generate(
-          gridCols: gridCols,
-          startOffset: Vector2(
-            0,
-            _board!.gameScreenViewComponent.gameStatusBarHeight,
-          ),
-        ),
-      );
-      _nextBlock = Block.generate(
-        gridCols: gridCols,
-        startOffset: Vector2(
-          0,
-          _board!.gameScreenViewComponent.gameStatusBarHeight,
-        ),
-      ); //生成下一个方块
-      _board?.expectNextBlockShape = _nextBlock!.shape;
-      _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
-    };
+    // _board?.onGameScreenLoaded = () {
+    //   var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
+    //   _board?.addToGameScreen(
+    //     _curBlock = Block.generate(
+    //       gridCols: gridCols,
+    //       startOffset: Vector2(
+    //         0,
+    //         _board!.gameScreenViewComponent.gameStatusBarHeight,
+    //       ),
+    //     ),
+    //   );
+    //   _nextBlock = Block.generate(
+    //     gridCols: gridCols,
+    //     startOffset: Vector2(
+    //       0,
+    //       _board!.gameScreenViewComponent.gameStatusBarHeight,
+    //     ),
+    //   ); //生成下一个方块
+    //   _board?.expectNextBlockShape = _nextBlock!.shape;
+    //   _board?.expectNextBlockColor = _nextBlock!.tetrisColor;
+    // };
   }
 
   /// 重新开始
@@ -90,7 +94,7 @@ class AndroidTetrisGame extends FlameGame {
     if (_curBlock != null) {
       _curBlock?.removeFromParent();
     }
-    _board?.clear(); //清空游戏面板
+    _board?.resetData(); //清空游戏面板
     gameLevel = 1; //重置游戏等级
     fallDownSpeed = 1.0; //重置下落速度
     _isGameOver = false;
@@ -128,6 +132,10 @@ class AndroidTetrisGame extends FlameGame {
       if (_isGameOver) {
         restartGame(); //重新开始游戏
       } else {
+        if (_curBlock == null) {
+          restartGame(); //重新开始游戏
+          return;
+        }
         _isAllowGameRun = !_isAllowGameRun; //游戏开始和暂停
       }
     } else if (type == GameButtonType.soundEffect) {
@@ -162,6 +170,7 @@ class AndroidTetrisGame extends FlameGame {
       _board?.mergeBlock(_curBlock!); //游戏结束了还是要merge这个方块
       _isGameOver = true; //标记游戏结束
       _isAllowGameRun = false; //不允许Game继续运行
+      gameOverStreamController?.sink.add(1); //发送游戏结束事件
       // add(_gameOverScene = WebGameOverScene()..onRestartGame = restart);
     }
     var gridCols = _board!.gameScreenViewComponent.cellColumnCount;
@@ -189,7 +198,9 @@ class AndroidTetrisGame extends FlameGame {
           _board!.gameScreenViewComponent.scoreNumber <= levelInfo.maxScore) {
         gameLevel = levelInfo.level;
         fallDownSpeed = levelInfo.speed;
-        _board?.gameScreenViewComponent.levelNumber = gameLevel;
+        _board?.gameScreenViewComponent
+          ?..levelNumber = gameLevel
+          ..speedNumber = fallDownSpeed;
       }
     }
     debugPrint('Level Up: $gameLevel, Game Speed: $fallDownSpeed');

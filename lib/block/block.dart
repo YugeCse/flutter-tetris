@@ -102,7 +102,7 @@ abstract class Block extends PositionComponent {
             drawCell(
               canvas,
               OffsetInt(dx: x, dy: y),
-              renderColor: tetrisColor,
+              renderColor: Colors.black,
               strokeWidth: 1.2,
               innerPadding: 0.2,
               borderRadius: 1,
@@ -122,7 +122,7 @@ abstract class Block extends PositionComponent {
     if (kIsWeb) {
       return Color.fromARGB(255, 34, 34, 34);
     }
-    return Color.fromARGB(255, 78, 78, 78).withAlpha(80);
+    return Color.fromARGB(255, 78, 78, 78).withAlpha(60);
   }
 
   /// 绘制单元格

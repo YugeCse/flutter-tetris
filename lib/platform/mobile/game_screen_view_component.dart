@@ -8,6 +8,8 @@ import 'package:flutter/material.dart' hide Image;
 import 'package:tetris/data/offset_int.dart';
 import 'package:tetris/block/block.dart';
 import 'package:tetris/platform/game_collision_detector.dart';
+import 'package:tetris/platform/mobile/android_game_over.dart';
+import 'package:tetris/platform/mobile/android_tetris_game.dart';
 import 'package:tetris/utils/collision_utils.dart' show CollisionUtils;
 import 'package:tetris/utils/datetime_utils.dart';
 import 'package:tetris/utils/sound_utils.dart';
@@ -15,7 +17,7 @@ import 'package:tetris/utils/shape_utils.dart';
 
 /// 游戏显示组件
 class GameScreenViewComponent extends PositionComponent
-    with GameCollisionDetector {
+    with GameCollisionDetector, HasGameRef<AndroidTetrisGame> {
   /// 游戏视图Padding宽度
   static final double viewPadding = 8;
 
@@ -52,6 +54,9 @@ class GameScreenViewComponent extends PositionComponent
   /// 当前等级数字
   int levelNumber = 1;
 
+  /// 速度数值
+  double speedNumber = 1.0;
+
   /// 俄罗斯城堡图像
   Image? _tetrisCityImage;
 
@@ -67,14 +72,14 @@ class GameScreenViewComponent extends PositionComponent
   /// 音效关闭Svg资源
   Svg? _soundOffSvg;
 
-  /// 预测下一个方块的标题组件
-  TextComponent? _expectedNextBlockTitle;
-
   /// 当前得分数字组件
   TextComponent? _scoreNumberComponent;
 
   /// 当前等级数字组件
   TextComponent? _levelNumberComponent;
+
+  /// 速度数值组件
+  TextComponent? _speedNumberComponent;
 
   /// 当前时间组件
   TextComponent? _dateTimeTextComponent;
@@ -84,6 +89,9 @@ class GameScreenViewComponent extends PositionComponent
 
   /// 音效开关图标展示组件
   SvgComponent? _soundSvgComponent;
+
+  /// 游戏结束的展示组件
+  AndroidGameOver? _gameOverComponent;
 
   GameScreenViewComponent({super.size, super.position}) {
     gameStatusBarHeight = Block.gridSize * 1.2; //游戏状态栏高度，设定为2个格子高度
@@ -123,18 +131,18 @@ class GameScreenViewComponent extends PositionComponent
       ),
     );
     add(
-      _expectedNextBlockTitle = TextComponent(
-        anchor: Anchor.center,
-        text: "下一个方块",
+      TextComponent(
+        // anchor: Anchor.center,
+        text: "预备方块",
         textRenderer: titleTextRenderer,
         position:
             Vector2(cellColumnCount + 1.5, 0) * Block.gridSize +
-            Vector2(0, gameStatusBarHeight + viewPadding * 2),
+            Vector2(0, gameStatusBarHeight + viewPadding),
       ),
     );
     add(
       TextComponent(
-        text: '得分：',
+        text: '游戏得分',
         textRenderer: titleTextRenderer,
         position:
             Vector2(cellColumnCount + 1.5, 6) * Block.gridSize +
@@ -152,19 +160,37 @@ class GameScreenViewComponent extends PositionComponent
     );
     add(
       TextComponent(
-        text: '等级：',
+        text: '游戏等级',
         textRenderer: titleTextRenderer,
         position:
-            Vector2(cellColumnCount + 1.5, 10) * Block.gridSize +
+            Vector2(cellColumnCount + 1.5, 9.3) * Block.gridSize +
             Vector2(0, gameStatusBarHeight + viewPadding * 2),
       ),
     );
     add(
       _levelNumberComponent = TextComponent(
-        text: '$levelNumber',
+        text: '$scoreNumber',
         textRenderer: valueTextRenderer,
         position:
-            Vector2(cellColumnCount + 1.5, 11.3) * Block.gridSize +
+            Vector2(cellColumnCount + 1.5, 10.6) * Block.gridSize +
+            Vector2(0, gameStatusBarHeight + viewPadding * 2),
+      ),
+    );
+    add(
+      TextComponent(
+        text: '速度(倍数)',
+        textRenderer: titleTextRenderer,
+        position:
+            Vector2(cellColumnCount + 1.5, 12.6) * Block.gridSize +
+            Vector2(0, gameStatusBarHeight + viewPadding * 2),
+      ),
+    );
+    add(
+      _speedNumberComponent = TextComponent(
+        text: speedNumber.toStringAsFixed(2),
+        textRenderer: valueTextRenderer,
+        position:
+            Vector2(cellColumnCount + 1.5, 13.9) * Block.gridSize +
             Vector2(0, gameStatusBarHeight + viewPadding * 2),
       ),
     );
@@ -174,7 +200,7 @@ class GameScreenViewComponent extends PositionComponent
         textRenderer: titleTextRenderer,
         position: Vector2(Block.gridSize * 0.5, viewPadding / 3.0),
       ),
-    );
+    ); //添加状态栏的日期时间文本组件
     add(
       _bgMusicSvgComponent = SvgComponent(
         svg: SoundUtils.isBgMusicEnabled ? _bgMusicOnSvg : _bgMusicOffSvg,
@@ -185,7 +211,7 @@ class GameScreenViewComponent extends PositionComponent
         size: Vector2.all(Block.gridSize * 1.0),
         position: Vector2(size.x - Block.gridSize * 1.5, viewPadding / 2),
       ),
-    );
+    ); //添加状态栏的背景音乐图标组件
     add(
       _soundSvgComponent = SvgComponent(
         svg: SoundUtils.isSoundEffectEnabled ? _soundOnSvg : _soundOffSvg,
@@ -198,16 +224,29 @@ class GameScreenViewComponent extends PositionComponent
             Paint()
               ..colorFilter = ColorFilter.mode(Colors.black, BlendMode.srcIn),
       ),
-    );
+    ); //添加状态栏的音效图标组件
+    game.gameOverStreamController?.stream.listen((_) {
+      if (_gameOverComponent == null) {
+        add(
+          _gameOverComponent =
+              AndroidGameOver()
+                ..size = size
+                ..userHighScore = scoreNumber
+                ..userLevelNumber = levelNumber,
+        );
+      }
+      debugPrint('游戏日志：收到游戏结束通知！');
+    }); //监听游戏结束事件
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    _expectedNextBlockTitle?.position.x =
-        ((cellColumnCount + 3.5) * Block.gridSize); //更新标题的位置
+    // _expectedNextBlockTitle?.position.x =
+    // ((cellColumnCount + 3.5) * Block.gridSize); //更新标题的位置
     _levelNumberComponent?.text = "$levelNumber"; //更新分数
     _scoreNumberComponent?.text = "$scoreNumber"; //更新分数
+    _speedNumberComponent?.text = speedNumber.toStringAsFixed(2); //更新速度
     _dateTimeTextComponent?.text = DatetimeUtils.todayTimeText; //更新日期
     _bgMusicSvgComponent?.svg =
         SoundUtils.isBgMusicEnabled ? _bgMusicOnSvg : _bgMusicOffSvg; //更新背景音乐图标
@@ -224,12 +263,6 @@ class GameScreenViewComponent extends PositionComponent
     drawGameScreenBackground(canvas); //绘制游戏背景色
     drawGameAllCellBlocks(canvas); //绘制游戏屏幕中的所有格子
     drawExpectedBlock(canvas); //绘制预测的下一个方块
-    // var paragraph = ParagraphBuilder(
-    //   ParagraphStyle(fontStyle: FontStyle.normal, fontSize: 16),
-    // );
-    // // paragraph.pushStyle(TextSTyle(color: Colors.white));
-    // paragraph.addText("Hello world");
-    // canvas.drawParagraph(paragraph.build(), Offset(100, 100));
   }
 
   /// 绘制游戏屏幕背景
@@ -291,7 +324,10 @@ class GameScreenViewComponent extends PositionComponent
             viewPadding / Block.gridSize,
             (gameStatusBarHeight + viewPadding) / Block.gridSize,
           ),
-          renderColor: tetrisCells[y][x] ?? Block.defaultRenderColor,
+          renderColor:
+              (tetrisCells[y][x] != null
+                  ? Colors.black
+                  : Block.defaultRenderColor),
         );
       }
     }
@@ -311,9 +347,8 @@ class GameScreenViewComponent extends PositionComponent
         expectNextBlockShape,
       );
       var offsetCols =
-          (1 +
-              cellColumnCount +
-              viewPadding / Block.gridSize +
+          (cellColumnCount +
+              viewPadding * 2 / Block.gridSize +
               (Block.maxGridCols - cols) / 2.0);
       var offsetRows = ((gameStatusBarHeight + viewPadding) / Block.gridSize);
       Block.drawCell(
@@ -323,7 +358,7 @@ class GameScreenViewComponent extends PositionComponent
         innerPadding: 0.2,
         borderRadius: 1,
         offset: Offset(offsetCols, offsetRows + 2.0),
-        renderColor: isSolid ? expectNextBlockColor : Colors.transparent,
+        renderColor: isSolid ? Colors.black : Colors.transparent,
       );
     }
   }
@@ -400,7 +435,10 @@ class GameScreenViewComponent extends PositionComponent
     }
     scoreNumber = 0; //重置分数
     levelNumber = 1; //重置等级
+    speedNumber = 1.0; //重置速度
     _scoreNumberComponent?.text = "0"; //重置分数
     _levelNumberComponent?.text = "1"; //重置等级
+    _gameOverComponent?.removeFromParent(); //移除游戏结束组件
+    _gameOverComponent = null; //重置游戏结束组件
   }
 }
